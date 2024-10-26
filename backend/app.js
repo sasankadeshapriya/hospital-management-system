@@ -32,8 +32,10 @@ mssql.connect(sqlConfig).then(pool => {
 
 // Route imports
 const testRoute = require('./routes/testRoute');
+const patientsRoute = require('./routes/patientsRoute');
 
 // Use Routes
 app.use('/api/v1/test', testRoute);
+app.use('/api/v1/test', patientsRoute);
 
 module.exports = app;
