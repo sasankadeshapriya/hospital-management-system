@@ -20,5 +20,5 @@ const getPatients = async (req, res) => {
 };
 
 module.exports = {
-  getDemoData: getPatients,
+   getPatients,
 };
