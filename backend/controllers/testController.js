@@ -1,6 +1,6 @@
 const db = require('../db');
 
-const getDemoData = async (req, res) => {
+const getPatients = async (req, res) => {
   try {
     const sql = "SELECT * FROM Patients";
 
@@ -20,5 +20,5 @@ const getDemoData = async (req, res) => {
 };
 
 module.exports = {
-  getDemoData,
+  getDemoData: getPatients,
 };
