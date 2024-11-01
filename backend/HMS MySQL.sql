@@ -1,6 +1,7 @@
 CREATE DATABASE HMS;
 USE HMS;
 
+
 -- 1. Patients Table
 CREATE TABLE Patients (
     PatientID INT PRIMARY KEY auto_increment,  -- Unique identifier for each patient
@@ -10,9 +11,11 @@ CREATE TABLE Patients (
     Gender CHAR(1) NOT NULL,                  -- Gender: 'M' or 'F'
     ContactNumber VARCHAR(15) NOT NULL,       -- Patient's contact number
     Address VARCHAR(255) NOT NULL,             -- Residential address	
-    CNIC VARCHAR(20) UNIQUE NOT NULL           -- Unique CNIC number
+    CNIC VARCHAR(20) NOT NULL,           -- Unique CNIC number
+    isActive boolean not null
 );
 
+create unique index idx_cnic on Patients(CNIC);
 
 -- 2. Departments Table
 CREATE TABLE Departments (
@@ -20,6 +23,7 @@ CREATE TABLE Departments (
     DepartmentName VARCHAR(100) NOT NULL,
     HOD INT NOT NULL
 );
+
 
 
 -- 16. UserAccounts Table
@@ -32,8 +36,10 @@ CREATE TABLE UserAccounts (
     Photo VARCHAR(255),                             -- Path to the user's photo
     DOB DATE NOT NULL,                              -- Date of birth of the user
     ContactNumber VARCHAR(15) NOT NULL,            -- Contact number of the user
-    AccountType VARCHAR(50) NOT NULL                -- Type of account (Doctor, Lab Assistant, Receptionist, Pharmacist)
+    AccountType VARCHAR(50) NOT NULL,                -- Type of account (Doctor, Lab Assistant, Receptionist, Pharmacist)
+    isActive boolean not null
 );
+
 
 
 -- 3. Doctors Table
@@ -44,8 +50,11 @@ CREATE TABLE Doctors (
     Specialization VARCHAR(100) NOT NULL,       -- Medical specialization
     Status VARCHAR(50) NOT NULL,                -- Employment status
     DOJ DATE NOT NULL,                          -- Date of joining
+    isActive boolean not null,
+    FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID),
     FOREIGN KEY (UserID) REFERENCES UserAccounts(UserID) -- Link to UserAccounts table
 );
+
 
 CREATE TABLE DoctorAvailability (
     AvailabilityID INT PRIMARY KEY AUTO_INCREMENT,  -- Unique identifier for each availability slot
@@ -92,11 +101,15 @@ CREATE TABLE Doctor_Appointments (
     RoomNumber VARCHAR(50) NOT NULL,                -- Room number for the appointment
     QueueNumber INT NOT NULL,                       -- Queue number for the patient
     AppointmentType ENUM('Consultation', 'Lab'),           -- Type of appointment (Consultation or Lab Test)
-    QueueID INT NOT NULL,                           -- Foreign key to the ConsultationQueue table
+    QueueID INT NOT NULL,                       -- Foreign key to the ConsultationQueue table
+    isActive boolean not null,
     FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
     FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID),
     FOREIGN KEY (QueueID) REFERENCES ConsultationQueue(QueueID) -- Link to ConsultationQueue
 );
+
+
+
 
 
 CREATE TABLE Lab_Appointments (
@@ -109,6 +122,7 @@ CREATE TABLE Lab_Appointments (
     RoomNumber VARCHAR(50) NOT NULL,            -- Room number for the appointment
     QueueNumber INT NOT NULL,                    -- Queue number for the patient
     AppointmentType ENUM('Consultation', 'Lab'),       -- Type of appointment (Consultation or Lab Test)
+    isActive boolean not null,
     FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
     FOREIGN KEY (LabTestID) REFERENCES LabTests(TestID)
 );
@@ -272,12 +286,12 @@ CREATE TABLE Notifications (
 );
 
 
-INSERT INTO Patients (FirstName, LastName, DOB, Gender, ContactNumber, Address, CNIC) VALUES
-    ('Alice', 'Green', '1988-04-12', 'F', '0712345679', '123 Green St, Colombo', '923456790V'),
-    ('Bob', 'Brown', '1992-09-15', 'M', '0712345680', '456 Brown St, Colombo', '923456791V'),
-    ('Charlie', 'Black', '1985-01-22', 'M', '0712345681', '789 Black St, Colombo', '923456792V'),
-    ('Diana', 'White', '1993-07-30', 'F', '0712345682', '101 White St, Colombo', '923456793V'),
-    ('Ethan', 'Blue', '1990-03-05', 'M', '0712345683', '202 Blue St, Colombo', '923456794V');
+INSERT INTO Patients (FirstName, LastName, DOB, Gender, ContactNumber, Address, CNIC, isActive) VALUES
+    ('Alice', 'Green', '1988-04-12', 'F', '0712345679', '123 Green St, Colombo', '923456790V', true),
+    ('Bob', 'Brown', '1992-09-15', 'M', '0712345680', '456 Brown St, Colombo', '923456791V',true),
+    ('Charlie', 'Black', '1985-01-22', 'M', '0712345681', '789 Black St, Colombo', '923456792V',true),
+    ('Diana', 'White', '1993-07-30', 'F', '0712345682', '101 White St, Colombo', '923456793V',true),
+    ('Ethan', 'Blue', '1990-03-05', 'M', '0712345683', '202 Blue St, Colombo', '923456794V',true);
 
 -- Sample Data for Departments Table
 INSERT INTO Departments (DepartmentName, HOD) VALUES
@@ -288,23 +302,23 @@ INSERT INTO Departments (DepartmentName, HOD) VALUES
     ('Orthopedics', 5);
 
 -- Sample Data for UserAccounts Table
-INSERT INTO UserAccounts (Name, Email, Password, Address, Photo, DOB, ContactNumber, AccountType) VALUES
-    ('Dr. Alice Thompson', 'alice.thompson@example.com', 'password123', '123 Main St, Colombo', '/images/alice.jpg', '1975-05-12', '0711234567', 'Doctor'),
-    ('Dr. Robert Williams', 'robert.williams@example.com', 'password123', '456 Elm St, Galle', '/images/robert.jpg', '1978-08-23', '0717654321', 'Doctor'),
-    ('Dr. Susan Taylor', 'susan.taylor@example.com', 'password123', '789 Oak St, Kandy', '/images/susan.jpg', '1980-03-14', '0771234567', 'Doctor'),
-    ('Dr. John Brown', 'john.brown@example.com', 'password123', '101 Pine St, Matara', '/images/john.jpg', '1983-11-29', '0757654321', 'Doctor'),
-    ('Dr. Emma White', 'emma.white@example.com', 'password123', '202 Cedar St, Kurunegala', '/images/emma.jpg', '1979-06-18', '0719876543', 'Doctor'),
-    ('Sarah Lewis', 'sarah.lewis@example.com', 'password123', '303 Maple St, Negombo', '/images/sarah.jpg', '1985-01-21', '0714567890', 'Receptionist'),
-    ('Linda Lee', 'linda.lee@example.com', 'password123', '404 Birch St, Jaffna', '/images/linda.jpg', '1990-07-14', '0761234567', 'Lab Assistant'),
-    ('James Walker', 'james.walker@example.com', 'password123', '505 Walnut St, Colombo', '/images/james.jpg', '1984-10-08', '0759876543', 'Pharmacist');
+INSERT INTO UserAccounts (Name, Email, Password, Address, Photo, DOB, ContactNumber, AccountType, isActive) VALUES
+    ('Dr. Alice Thompson', 'alice.thompson@example.com', 'password123', '123 Main St, Colombo', '/images/alice.jpg', '1975-05-12', '0711234567', 'Doctor', true),
+    ('Dr. Robert Williams', 'robert.williams@example.com', 'password123', '456 Elm St, Galle', '/images/robert.jpg', '1978-08-23', '0717654321', 'Doctor', true),
+    ('Dr. Susan Taylor', 'susan.taylor@example.com', 'password123', '789 Oak St, Kandy', '/images/susan.jpg', '1980-03-14', '0771234567', 'Doctor', true),
+    ('Dr. John Brown', 'john.brown@example.com', 'password123', '101 Pine St, Matara', '/images/john.jpg', '1983-11-29', '0757654321', 'Doctor', true),
+    ('Dr. Emma White', 'emma.white@example.com', 'password123', '202 Cedar St, Kurunegala', '/images/emma.jpg', '1979-06-18', '0719876543', 'Doctor', true),
+    ('Sarah Lewis', 'sarah.lewis@example.com', 'password123', '303 Maple St, Negombo', '/images/sarah.jpg', '1985-01-21', '0714567890', 'Receptionist', true),
+    ('Linda Lee', 'linda.lee@example.com', 'password123', '404 Birch St, Jaffna', '/images/linda.jpg', '1990-07-14', '0761234567', 'Lab Assistant', true),
+    ('James Walker', 'james.walker@example.com', 'password123', '505 Walnut St, Colombo', '/images/james.jpg', '1984-10-08', '0759876543', 'Pharmacist', true);
 
 -- Sample Data for Doctors Table
-INSERT INTO Doctors (DepartmentID, UserID, Specialization, Status, DOJ) VALUES
-    (1, 1, 'Cardiologist', 'Active', '2005-04-15'),
-    (2, 2, 'Neurologist', 'Active', '2007-07-20'),
-    (3, 3, 'Oncologist', 'Active', '2010-09-12'),
-    (4, 4, 'Pediatrician', 'Active', '2012-12-01'),
-    (5, 5, 'Orthopedic Surgeon', 'Active', '2014-05-25');
+INSERT INTO Doctors (DepartmentID, UserID, Specialization, Status, DOJ, isActive) VALUES
+    (1, 1, 'Cardiologist', 'Active', '2005-04-15', true),
+    (2, 2, 'Neurologist', 'Active', '2007-07-20', true),
+    (3, 3, 'Oncologist', 'Active', '2010-09-12', true),
+    (4, 4, 'Pediatrician', 'Active', '2012-12-01', true),
+    (5, 5, 'Orthopedic Surgeon', 'Active', '2014-05-25', true);
 
 -- Sample Data for DoctorAvailability Table
 INSERT INTO DoctorAvailability (DoctorID, RoomNO, AvailableDay, StartTime, EndTime) VALUES
@@ -342,22 +356,22 @@ INSERT INTO ConsultationQueue (DoctorID, Date, AvailabilityID, AppointmentDateTi
     (5, '2024-11-13', 9, '2024-11-13 09:30:00');
 
 -- Sample Data for Doctor_Appointments Table
-INSERT INTO Doctor_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, DoctorID, RoomNumber, QueueNumber, AppointmentType, QueueID) VALUES
-    ('2024-10-28', '09:00:00', 'Pending', 1, 1, '101', 1, 'Consultation', 1),
-    ('2024-10-29', '10:00:00', 'Pending', 2, 4, '104', 2, 'Consultation', 2),
-    ('2024-10-29', '10:00:00', 'Pending', 3, 2, '102', 3, 'Consultation', 3),
-    ('2024-11-03', '11:00:00', 'Pending', 4, 3, '103', 4, 'Consultation', 4),
-    ('2024-11-07', '08:00:00', 'Pending', 5, 2, '102', 5, 'Consultation', 5),
-    ('2024-11-13', '09:30:00', 'Pending', 1, 5, '105', 6, 'Consultation', 6);
+INSERT INTO Doctor_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, DoctorID, RoomNumber, QueueNumber, AppointmentType, QueueID, isActive) VALUES
+    ('2024-10-28', '09:00:00', 'Pending', 1, 1, '101', 1, 'Consultation', 1, true),
+    ('2024-10-29', '10:00:00', 'Pending', 2, 4, '104', 2, 'Consultation', 2, true),
+    ('2024-10-29', '10:00:00', 'Pending', 3, 2, '102', 3, 'Consultation', 3, true),
+    ('2024-11-03', '11:00:00', 'Pending', 4, 3, '103', 4, 'Consultation', 4, true),
+    ('2024-11-07', '08:00:00', 'Pending', 5, 2, '102', 5, 'Consultation', 5, true),
+    ('2024-11-13', '09:30:00', 'Pending', 1, 5, '105', 6, 'Consultation', 6, true);
 
 -- Sample Data for Lab_Appointments Table
-INSERT INTO Lab_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, LabTestID, RoomNumber, QueueNumber, AppointmentType) VALUES
-    ('2024-10-28', '09:00:00', 'Pending', 1, 1, 'Lab 1', 1, 'Lab'),
-    ('2024-10-29', '10:00:00', 'Pending', 2, 2, 'Lab 2', 2, 'Lab'),
-    ('2024-10-29', '10:00:00', 'Pending', 3, 3, 'Lab 3', 3, 'Lab'),
-    ('2024-11-03', '11:00:00', 'Pending', 4, 4, 'Lab 4', 4, 'Lab'),
-    ('2024-11-07', '08:00:00', 'Pending', 5, 5, 'Lab 5', 5, 'Lab'),
-    ('2024-11-13', '09:30:00', 'Pending', 1, 6, 'Lab 6', 6, 'Lab');
+INSERT INTO Lab_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, LabTestID, RoomNumber, QueueNumber, AppointmentType, isActive) VALUES
+    ('2024-10-28', '09:00:00', 'Pending', 1, 1, 'Lab 1', 1, 'Lab', true),
+    ('2024-10-29', '10:00:00', 'Pending', 2, 2, 'Lab 2', 2, 'Lab', true),
+    ('2024-10-29', '10:00:00', 'Pending', 3, 3, 'Lab 3', 3, 'Lab', true),
+    ('2024-11-03', '11:00:00', 'Pending', 4, 4, 'Lab 4', 4, 'Lab', true),
+    ('2024-11-07', '08:00:00', 'Pending', 5, 5, 'Lab 5', 5, 'Lab', true),
+    ('2024-11-13', '09:30:00', 'Pending', 1, 6, 'Lab 6', 6, 'Lab', true);
 
 -- Sample Data for MedicalHistory Table
 INSERT INTO MedicalHistory (PatientID, Diagnosis, TreatmentHistory, Allergies, PreviousSurgeries, FamilyHistory) VALUES
@@ -458,6 +472,119 @@ INSERT INTO Notifications (PatientID, Message, NotificationDate, IsRead) VALUES
     (3, 'Reminder: Your consultation is scheduled for October 29, 2024.', '2024-10-03 09:30:00', FALSE),
     (4, 'You have a new message from your doctor.', '2024-10-04 14:00:00', TRUE),
     (5, 'Your prescription has been updated.', '2024-10-05 08:15:00', FALSE);
-    
+
+
 ALTER TABLE Departments ADD  FOREIGN KEY (HOD) REFERENCES Doctors(DoctorID);
 ALTER TABLE Doctors ADD  FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID);
+
+-- ================================================================================================================================================================================
+
+-- patients
+CREATE OR REPLACE VIEW PatientsView AS
+      SELECT * FROM Patients where isActive = 1;
+
+select * from PatientsView;
+-- ================================================================================================================================================================================      
+
+DELIMITER $$
+CREATE PROCEDURE getPatientByID(id int)
+	BEGIN
+		SELECT * FROM Patients WHERE PatientID = id;
+	END $$
+DELIMITER ;
+
+CALL getPatientByID(1);
+
+-- ================================================================================================================================================================================
+
+DELIMITER $$
+CREATE PROCEDURE updatePatient(
+		IN p_PatientID INT,
+		IN p_FirstName VARCHAR(100),
+		IN p_LastName VARCHAR(100),
+		IN p_DOB DATE,
+		IN p_Gender CHAR(1),
+		IN p_ContactNumber VARCHAR(15),
+		IN p_Address VARCHAR(255),
+		IN p_CNIC VARCHAR(20),
+        IN p_isActive boolean
+        )
+	BEGIN
+		UPDATE Patients
+			SET 
+				FirstName = p_FirstName,
+				LastName = p_LastName,
+				DOB = p_DOB,
+				Gender = p_Gender,
+				ContactNumber = p_ContactNumber,
+				Address = p_Address,
+				CNIC = p_CNIC,
+                isActive = p_isActive
+			WHERE PatientID = p_PatientID;
+	END $$
+DELIMITER ;
+
+CALL updatePatient(5, 'Randil', 'Hasanga', '2000-12-19', 'M', '0763456789', 'Temple Road, Waralla', '563456765V', true);
+
+-- ================================================================================================================================================================================
+
+DELIMITER $$
+
+CREATE PROCEDURE addPatient(
+		IN p_FirstName VARCHAR(100),
+		IN p_LastName VARCHAR(100),
+		IN p_DOB DATE,
+		IN p_Gender CHAR(1),
+		IN p_ContactNumber VARCHAR(15),
+		IN p_Address VARCHAR(255),
+		IN p_CNIC VARCHAR(20),
+        IN p_isActive bool
+)
+BEGIN
+        -- Insert new patient
+        INSERT INTO Patients (FirstName, LastName, DOB, Gender, ContactNumber, Address, CNIC, isActive)
+        VALUES (p_FirstName, p_LastName, p_DOB, p_Gender, p_ContactNumber, p_Address, p_CNIC, p_isActive);
+    
+END $$
+
+DELIMITER ;
+
+CALL addPatient('Kavindu', 'Sasanka', '2000-12-19', 'M', '0763456789', 'Temple Road, Waralla', '5656', true);
+
+-- ================================================================================================================================================================================
+
+DELIMITER $$
+
+CREATE PROCEDURE DeletePatientAndAppointments(
+    IN p_patientId INT
+)
+BEGIN
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error in deleting patient or appointments';
+    END;
+
+    START TRANSACTION;
+
+    UPDATE Patients 
+    SET isActive = 0 
+    WHERE PatientID = p_patientId;
+
+    UPDATE Doctor_Appointments 
+    SET isActive = 0
+    WHERE PatientID = p_patientId;
+
+    UPDATE Lab_Appointments 
+    SET isActive = 0 
+    WHERE PatientID = p_patientId;
+
+    COMMIT;
+END $$
+
+DELIMITER ;
+
+call DeletePatientAndAppointments(3);
+
+select * from Patients;
