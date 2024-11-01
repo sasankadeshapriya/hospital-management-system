@@ -151,7 +151,7 @@ CREATE TABLE Prescriptions (
 
 -- 10. Inventory Table
 CREATE TABLE Inventory (
-    InventoryID INT PRIMARY KEY auto_increment,     -- Unique identifier for each inventory item
+    InventoryItemID INT PRIMARY KEY auto_increment,     -- Unique identifier for each inventory item
     MedicineName VARCHAR(100) NOT NULL,            -- Name of the medicine
     Quantity INT NOT NULL,                          -- Quantity in stock
     ExpiryDate DATE NOT NULL,                       -- Expiry date of the medicine
@@ -165,9 +165,9 @@ CREATE TABLE PrescriptionDetails (
     MedicineName VARCHAR(100) NOT NULL,           -- Name of the prescribed medicine
     Dosage VARCHAR(50) NOT NULL,                   -- Dosage instructions
     Instructions TEXT,
-	InventoryID INT,                           -- Additional instructions for the patient
+	InventoryItemID INT,                           -- Additional instructions for the patient
     FOREIGN KEY (PrescriptionID) REFERENCES Prescriptions(PrescriptionID),
-	FOREIGN KEY (InventoryID) REFERENCES Inventory(InventoryID)
+	FOREIGN KEY (InventoryItemID) REFERENCES Inventory(InventoryItemID)
 );
 
 -- 9. Billing Table
@@ -381,6 +381,13 @@ INSERT INTO MedicalHistory (PatientID, Diagnosis, TreatmentHistory, Allergies, P
     (4, 'Arthritis', 'Physical therapy', 'Ibuprofen', 'Hip replacement', 'Family history of arthritis'),
     (5, 'Hyperthyroidism', 'Medication', 'Thyroid medication', 'Thyroid surgery', 'Family history of hyperthyroidism');
 
+INSERT INTO Inventory (MedicineName, Quantity, ExpiryDate, Cost) VALUES
+    ('Metformin', 100, '2025-05-01', 0.50),
+    ('Lisinopril', 200, '2024-12-15', 0.30),
+    ('Albuterol', 150, '2025-03-10', 1.20),
+    ('Methotrexate', 50, '2026-01-20', 2.00),
+    ('Levothyroxine', 300, '2024-11-30', 0.40);
+
 -- Sample Data for Prescriptions Table
 INSERT INTO Prescriptions (PatientID, DoctorID, Date) VALUES
     (1, 1, '2024-10-28'),
@@ -390,13 +397,14 @@ INSERT INTO Prescriptions (PatientID, DoctorID, Date) VALUES
     (5, 5, '2024-11-07');
 
 -- Sample Data for PrescriptionDetails Table
-INSERT INTO PrescriptionDetails (PrescriptionID, MedicineName, Dosage, Instructions) VALUES
-    (1, 'Metformin', 'Take 2 tablets twice a day', 'With food'),
-    (2, 'Lisinopril', 'Take 1 tablet once a day', 'With water'),
-    (3, 'Albuterol', 'Take 2 puffs twice a day', 'Before meals'),
-    (4, 'Methotrexate', 'Take 1 tablet once a week', 'With food'),
-    (5, 'Levothyroxine', 'Take 1 tablet once a day', 'With water');
+INSERT INTO PrescriptionDetails (PrescriptionID, MedicineName, Dosage, Instructions, InventoryItemID) VALUES
+    (1, 'Metformin', 'Take 2 tablets twice a day', 'With food', 1),
+    (2, 'Lisinopril', 'Take 1 tablet once a day', 'With water', 2),
+    (3, 'Albuterol', 'Take 2 puffs twice a day', 'Before meals', 3),
+    (4, 'Methotrexate', 'Take 1 tablet once a week', 'With food', 4),
+    (5, 'Levothyroxine', 'Take 1 tablet once a day', 'With water', 5);
 
+select * from PrescriptionDetails;
 -- Sample Data for Billing Table
 INSERT INTO Billing (AppointmentType, PatientID, Amount, PaymentMethod, Date, Type, IsRefunded, D_AppointmentID, L_AppointmentID) VALUES
     ('Consultation', 1, 1000.00, 'Cash', '2024-10-28', 'Consultation', FALSE, 1, NULL),
@@ -587,4 +595,48 @@ DELIMITER ;
 
 call DeletePatientAndAppointments(3);
 
-select * from Patients;
+-- ================================================================================================================================================================================
+-- ================================================================================================================================================================================
+
+create view vw_inventory
+as
+select * from Inventory;
+
+-- ================================================================================================================================================================================
+
+DELIMITER $$
+CREATE PROCEDURE getInventoryItemByID(id int)
+	BEGIN
+		SELECT * FROM Inventory WHERE InventoryItemID = id;
+	END $$
+DELIMITER ;
+
+call getInventoryItemByID(1);
+
+-- ================================================================================================================================================================================
+
+DELIMITER $$
+CREATE PROCEDURE updateInventoryItem(
+		i_InventoryItemID INT ,    
+		i_MedicineName VARCHAR(100),  
+		i_Quantity INT, 
+		i_ExpiryDate DATE,
+		i_Cost DECIMAL(10, 2)
+        )
+	BEGIN
+		UPDATE Inventory
+			SET 
+				MedicineName = i_MedicineName,
+				Quantity = i_Quantity,
+				ExpiryDate = i_ExpiryDate,
+				Cost = i_Cost
+			WHERE InventoryItemID = i_InventoryItemID;
+	END $$
+DELIMITER ;
+
+call updateInventoryItem(4, "panadol", 33, '2026-10-31', 0.40);
+
+select * from vw_inventory;
+
+
+

@@ -35,7 +35,7 @@ const getPatientsByID = async (req, res) => {
           return res.status(200).json(result);
         });
   } catch (error) {
-      console.log(err);
+      console.log(error);
       res.status(500).send('Database query failed');
   }
 }
