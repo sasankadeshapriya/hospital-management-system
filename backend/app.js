@@ -15,6 +15,6 @@ const port = process.env.PORT || 5000;
 const patientsRoute = require('./routes/patientsRoute');
 
 // Use Routes
-app.use('/', patientsRoute);
+app.use('/api/v1/patients', patientsRoute);
 
 module.exports = app;
