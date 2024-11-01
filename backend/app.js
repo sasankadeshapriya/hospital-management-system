@@ -12,9 +12,9 @@ app.use(express.json());
 const port = process.env.PORT || 5000;
 
 // Route imports
-const testRoute = require('./routes/testRoute');
+const patientsRoute = require('./routes/patientsRoute');
 
 // Use Routes
-app.use('/api/v1/test', testRoute);
+app.use('/', patientsRoute);
 
 module.exports = app;
