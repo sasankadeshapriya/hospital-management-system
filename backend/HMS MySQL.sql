@@ -14,14 +14,12 @@ CREATE TABLE Patients (
 );
 
 
-
 -- 2. Departments Table
 CREATE TABLE Departments (
-    DepartmentID INT PRIMARY KEY auto_increment,  -- Unique identifier for each department
-    DepartmentName VARCHAR(100) NOT NULL,        -- Name of the department (e.g., Cardiology)
-    HOD VARCHAR(100) NOT NULL                     -- Head of the department
+    DepartmentID INT PRIMARY KEY AUTO_INCREMENT,
+    DepartmentName VARCHAR(100) NOT NULL,
+    HOD INT NOT NULL
 );
-
 
 
 -- 16. UserAccounts Table
@@ -38,7 +36,6 @@ CREATE TABLE UserAccounts (
 );
 
 
-
 -- 3. Doctors Table
 CREATE TABLE Doctors (
     DoctorID INT PRIMARY KEY auto_increment,     -- Unique identifier for each doctor
@@ -47,10 +44,8 @@ CREATE TABLE Doctors (
     Specialization VARCHAR(100) NOT NULL,       -- Medical specialization
     Status VARCHAR(50) NOT NULL,                -- Employment status
     DOJ DATE NOT NULL,                          -- Date of joining
-    FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID),
     FOREIGN KEY (UserID) REFERENCES UserAccounts(UserID) -- Link to UserAccounts table
 );
-
 
 CREATE TABLE DoctorAvailability (
     AvailabilityID INT PRIMARY KEY AUTO_INCREMENT,  -- Unique identifier for each availability slot
@@ -102,9 +97,6 @@ CREATE TABLE Doctor_Appointments (
     FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID),
     FOREIGN KEY (QueueID) REFERENCES ConsultationQueue(QueueID) -- Link to ConsultationQueue
 );
-
-
-
 
 
 CREATE TABLE Lab_Appointments (
@@ -289,16 +281,11 @@ INSERT INTO Patients (FirstName, LastName, DOB, Gender, ContactNumber, Address, 
 
 -- Sample Data for Departments Table
 INSERT INTO Departments (DepartmentName, HOD) VALUES
-    ('Cardiology', 'Dr. Alice Thompson'),
-    ('Neurology', 'Dr. Robert Williams'),
-    ('Oncology', 'Dr. Susan Taylor'),
-    ('Pediatrics', 'Dr. John Brown'),
-    ('Orthopedics', 'Dr. Emma White'),
-    ('Radiology', 'Dr. Michael Clark'),
-    ('Dermatology', 'Dr. Linda Lee'),
-    ('Gynecology', 'Dr. Sarah Lewis'),
-    ('Psychiatry', 'Dr. James Walker'),
-    ('Ophthalmology', 'Dr. Laura Harris');
+    ('Cardiology', 1),
+    ('Neurology', 2),
+    ('Oncology', 3),
+    ('Pediatrics', 4),
+    ('Orthopedics', 5);
 
 -- Sample Data for UserAccounts Table
 INSERT INTO UserAccounts (Name, Email, Password, Address, Photo, DOB, ContactNumber, AccountType) VALUES
@@ -472,3 +459,5 @@ INSERT INTO Notifications (PatientID, Message, NotificationDate, IsRead) VALUES
     (4, 'You have a new message from your doctor.', '2024-10-04 14:00:00', TRUE),
     (5, 'Your prescription has been updated.', '2024-10-05 08:15:00', FALSE);
     
+ALTER TABLE Departments ADD  FOREIGN KEY (HOD) REFERENCES Doctors(DoctorID);
+ALTER TABLE Doctors ADD  FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID);
