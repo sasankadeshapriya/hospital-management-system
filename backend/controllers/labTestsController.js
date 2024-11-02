@@ -4,21 +4,34 @@ const addLabTest = async (req, res) => {
     try {
         const { TestName, ProcessingTime, Cost } = req.body;
 
-        const values = [
-            TestName,
-            ProcessingTime,
-            Cost
-        ];
-
-        const sql = "call insertLabTest(?, ?, ?)";
-
-        db.query(sql, values, (err, result) => {
+        const checkSql = "SELECT * FROM LabTests WHERE TestName = ?";
+        db.query(checkSql, [TestName], (err, checkResult) => {
             if (err) {
-                console.error("Database error:", err);
+                console.error("Database error during TestName check:", err);
                 return res.status(500).json({ message: "Something unexpected has occurred" });
             }
-            console.log("Data updated successfully");
-            return res.status(200).json(result);
+
+            // If a lab test with the same TestName exists, return a conflict error
+            if (checkResult.length > 0) {
+                return res.status(409).json({ message: "A lab test with this TestName is already registered." });
+            }
+
+            const values = [
+                TestName,
+                ProcessingTime,
+                Cost
+            ];
+
+            const sql = "call insertLabTest(?, ?, ?)";
+
+            db.query(sql, values, (err, result) => {
+                if (err) {
+                    console.error("Database error:", err);
+                    return res.status(500).json({ message: "Something unexpected has occurred" });
+                }
+                console.log("Data updated successfully");
+                return res.status(200).json(result);
+            });
         });
     } catch (error) {
         console.error("Unexpected error:", error);
@@ -93,22 +106,22 @@ const updateLabTest = async (req, res) => {
 
 const deleteLabTest = (req, res) => {
     try {
-      const id = req.params.id;
-      const sql = 'call deleteLabTest(?);';
+        const id = req.params.id;
+        const sql = 'call deleteLabTest(?);';
 
-      db.query(sql, [id], (err, result) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).json({ message: "Something unexpected has occurred" });
-        }
-        console.log('Soft delete successful');
-        return res.status(200).json(result);
-      });
+        db.query(sql, [id], (err, result) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ message: "Something unexpected has occurred" });
+            }
+            console.log('Soft delete successful');
+            return res.status(200).json(result);
+        });
     } catch (error) {
-      console.error("Unexpected error:", error);
-      return res.status(500).json({ message: "Something unexpected has occurred :" });
+        console.error("Unexpected error:", error);
+        return res.status(500).json({ message: "Something unexpected has occurred :" });
     }
-  }
+}
 
 module.exports = {
     addLabTest,
