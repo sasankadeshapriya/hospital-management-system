@@ -1,5 +1,3 @@
-use hms;
-
 INSERT INTO Patients (FirstName, LastName, DOB, Gender, ContactNumber, Address, CNIC, isActive) VALUES
     ('Alice', 'Green', '1988-04-12', 'F', '0712345679', '123 Green St, Colombo', '923456790V', true),
     ('Bob', 'Brown', '1992-09-15', 'M', '0712345680', '456 Brown St, Colombo', '923456791V',true),
@@ -194,3 +192,6 @@ INSERT INTO Notifications (PatientID, Message, NotificationDate, IsRead) VALUES
     (3, 'Reminder: Your consultation is scheduled for October 29, 2024.', '2024-10-03 09:30:00', FALSE),
     (4, 'You have a new message from your doctor.', '2024-10-04 14:00:00', TRUE),
     (5, 'Your prescription has been updated.', '2024-10-05 08:15:00', FALSE);
+    
+ALTER TABLE Departments ADD  FOREIGN KEY (HOD) REFERENCES Doctors(DoctorID);
+ALTER TABLE Doctors ADD  FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID);
