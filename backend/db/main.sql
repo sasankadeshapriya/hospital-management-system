@@ -277,5 +277,12 @@ CREATE TABLE Notifications (
 );
 
 
-
+-- archive table for department
+CREATE TABLE archiveDepartment (
+    ArchiveID INT PRIMARY KEY AUTO_INCREMENT,
+    DepartmentID INT NOT NULL,
+    DepartmentName VARCHAR(100) NOT NULL,
+    HOD INT NOT NULL,
+    DeletedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
