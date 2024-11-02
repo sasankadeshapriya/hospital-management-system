@@ -1,4 +1,22 @@
 -- ================================================================================================================================================================================
+-- insert item
+
+DELIMITER $$
+CREATE PROCEDURE insertInventoryItem(   
+		i_MedicineName VARCHAR(100),  
+		i_Quantity INT, 
+		i_ExpiryDate DATE,
+		i_Cost DECIMAL(10, 2)
+        )
+	BEGIN
+		INSERT INTO Inventory(MedicineName, Quantity, ExpiryDate, Cost)
+        VALUES(i_MedicineName, i_Quantity, i_ExpiryDate, i_Cost);
+	END $$
+DELIMITER ;
+
+call insertInventoryItem("panadol", 33, '2026-10-31', 0.40);
+
+-- ================================================================================================================================================================================
 -- get all inventory items
 
 create view vw_inventory

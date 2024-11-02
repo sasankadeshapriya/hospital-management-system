@@ -65,7 +65,8 @@ CREATE TABLE LabTests (
     TestID INT PRIMARY KEY auto_increment,      -- Unique identifier for each test
     TestName VARCHAR(100) NOT NULL,            -- Name of the test (e.g., Blood Test)
     ProcessingTime TIME NOT NULL,              -- Time taken to process the test
-    Cost DECIMAL(10, 2) NOT NULL                -- Cost of the test
+    Cost DECIMAL(10, 2) NOT NULL,                -- Cost of the test
+    isActive boolean
 );
 
 CREATE TABLE ConsultationQueue (

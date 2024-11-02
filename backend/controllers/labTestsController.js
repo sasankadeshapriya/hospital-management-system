@@ -1,18 +1,16 @@
 const db = require('../db');
 
-const addInventoryItem = async (req, res) => {
+const addLabTest = async (req, res) => {
     try {
-        const id = req.params.id;
-        const { MedicineName, Quantity, ExpiryDate, Cost } = req.body;
+        const { TestName, ProcessingTime, Cost } = req.body;
 
         const values = [
-            MedicineName,
-            Quantity,
-            ExpiryDate,
-            Cost,
+            TestName,
+            ProcessingTime,
+            Cost
         ];
 
-        const sql = "call insertInventoryItem(?, ?, ?, ?);";
+        const sql = "call insertLabTest(?, ?, ?)";
 
         db.query(sql, values, (err, result) => {
             if (err) {
@@ -26,11 +24,11 @@ const addInventoryItem = async (req, res) => {
         console.error("Unexpected error:", error);
         return res.status(500).json({ message: "Something unexpected has occurred" });
     }
-};
+}
 
-const getInventoryItems = async (req, res) => {
+const getLabTests = async (req, res) => {
     try {
-        const sql = 'select * from vw_inventory;';
+        const sql = 'select * from vw_labtests;';
 
         db.query(sql, (err, result) => {
             if (err) {
@@ -46,29 +44,10 @@ const getInventoryItems = async (req, res) => {
     }
 }
 
-
-const getExpiredInventoryItems = async (req, res) => {
-    try {
-        const sql = 'select * from vw_inventory_expired';
-
-        db.query(sql, (err, result) => {
-            if (err) {
-                console.log(err);
-                return res.status(500).json({ message: "Something unexpected has occurred" });
-            }
-            console.log('Data retrieved successfully');
-            return res.status(200).json(result);
-        })
-    } catch (error) {
-        console.log(error);
-        res.status(500).send('Database query failed');
-    }
-}
-
-const getInventoryItemByID = async (req, res) => {
+const getLabTestByID = async (req, res) => {
     try {
         const id = req.params.id;
-        const sql = "call getInventoryItemByID(?);";
+        const sql = "call getLabTestByID(?)";
 
         db.query(sql, [id], (err, result) => {
             if (err) {
@@ -84,20 +63,19 @@ const getInventoryItemByID = async (req, res) => {
     }
 }
 
-const updateInventoryItem = async (req, res) => {
+const updateLabTest = async (req, res) => {
     try {
         const id = req.params.id;
-        const { MedicineName, Quantity, ExpiryDate, Cost } = req.body;
+        const { TestName, ProcessingTime, Cost } = req.body;
 
         const values = [
             id,
-            MedicineName,
-            Quantity,
-            ExpiryDate,
-            Cost,
+            TestName,
+            ProcessingTime,
+            Cost
         ];
 
-        const sql = "call updateInventoryItem(?, ?, ?, ?, ?);";
+        const sql = "call updateLabTest(?, ?, ?, ?)";
 
         db.query(sql, values, (err, result) => {
             if (err) {
@@ -113,30 +91,29 @@ const updateInventoryItem = async (req, res) => {
     }
 };
 
-const deleteItem = (req, res) => {
+const deleteLabTest = (req, res) => {
     try {
-        const id = req.params.id;
-        const sql = 'call deleteInventoryItemByID(?)';
+      const id = req.params.id;
+      const sql = 'call deleteLabTest(?);';
 
-        db.query(sql, [id], (err, result) => {
-            if (err) {
-                console.log(err);
-                return res.status(500).json({ message: "Something unexpected has occurred" });
-            }
-            console.log('Soft delete successful');
-            return res.status(200).json(result);
-        });
+      db.query(sql, [id], (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ message: "Something unexpected has occurred" });
+        }
+        console.log('Soft delete successful');
+        return res.status(200).json(result);
+      });
     } catch (error) {
-        console.error("Unexpected error:", error);
-        return res.status(500).json({ message: "Something unexpected has occurred :" });
+      console.error("Unexpected error:", error);
+      return res.status(500).json({ message: "Something unexpected has occurred :" });
     }
-}
+  }
 
 module.exports = {
-    addInventoryItem,
-    getInventoryItems,
-    getExpiredInventoryItems,
-    getInventoryItemByID,
-    updateInventoryItem,
-    deleteItem
+    addLabTest,
+    getLabTests,
+    getLabTestByID,
+    updateLabTest,
+    deleteLabTest
 }

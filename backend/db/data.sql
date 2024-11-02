@@ -46,17 +46,17 @@ INSERT INTO DoctorAvailability (DoctorID, RoomNO, AvailableDay, StartTime, EndTi
     (5, 105, 'Saturday', '09:30:00', '17:30:00');
 
 -- Sample Data for LabTests Table
-INSERT INTO LabTests (TestName, ProcessingTime, Cost) VALUES
-    ('Blood Test', '01:00:00', 1500.00),
-    ('Urine Test', '00:30:00', 800.00),
-    ('X-Ray', '01:30:00', 2500.00),
-    ('MRI Scan', '02:00:00', 15000.00),
-    ('CT Scan', '01:45:00', 12000.00),
-    ('Lipid Profile', '01:00:00', 2000.00),
-    ('Liver Function Test', '00:45:00', 1800.00),
-    ('Thyroid Function Test', '00:45:00', 1200.00),
-    ('Blood Sugar Test', '00:30:00', 1000.00),
-    ('COVID-19 PCR Test', '02:00:00', 5000.00);
+INSERT INTO LabTests (TestName, ProcessingTime, Cost, isActive) VALUES
+    ('Blood Test', '01:00:00', 1500.00, true),
+    ('Urine Test', '00:30:00', 800.00, true),
+    ('X-Ray', '01:30:00', 2500.00, true),
+    ('MRI Scan', '02:00:00', 15000.00, true),
+    ('CT Scan', '01:45:00', 12000.00, true),
+    ('Lipid Profile', '01:00:00', 2000.00, true),
+    ('Liver Function Test', '00:45:00', 1800.00, true),
+    ('Thyroid Function Test', '00:45:00', 1200.00, true),
+    ('Blood Sugar Test', '00:30:00', 1000.00, true),
+    ('COVID-19 PCR Test', '02:00:00', 5000.00, true);
 
 -- Sample Data for ConsultationQueue Table
 INSERT INTO ConsultationQueue (DoctorID, Date, AvailabilityID, AppointmentDateTime) VALUES
