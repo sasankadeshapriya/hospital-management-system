@@ -1,6 +1,7 @@
 CREATE DATABASE HMS;
 USE HMS;
 
+
 -- 1. Patients Table
 CREATE TABLE Patients (
     PatientID INT PRIMARY KEY auto_increment,  -- Unique identifier for each patient
@@ -46,7 +47,6 @@ CREATE TABLE Doctors (
     Status VARCHAR(50) NOT NULL,                -- Employment status
     DOJ DATE NOT NULL,                          -- Date of joining
     isActive boolean not null,
-    FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID),
     FOREIGN KEY (UserID) REFERENCES UserAccounts(UserID) -- Link to UserAccounts table
 );
 
@@ -144,6 +144,12 @@ CREATE TABLE Inventory (
     ExpiryDate DATE NOT NULL,                       -- Expiry date of the medicine
     Cost DECIMAL(10, 2) NOT NULL                    -- Cost per unit
 );
+
+CREATE TABLE InventoryArchive LIKE Inventory;
+ALTER TABLE InventoryArchive 
+ADD COLUMN deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+
 
 -- 8. PrescriptionDetails Table
 CREATE TABLE PrescriptionDetails (
@@ -268,9 +274,6 @@ CREATE TABLE Notifications (
     IsRead BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (PatientID) REFERENCES Patients(PatientID)
 );
-
-ALTER TABLE Departments ADD  FOREIGN KEY (HOD) REFERENCES Doctors(DoctorID);
-ALTER TABLE Doctors ADD  FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID);
 
 
 

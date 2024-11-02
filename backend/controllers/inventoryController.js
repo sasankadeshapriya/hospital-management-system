@@ -88,8 +88,8 @@ const updateInventoryItem = async (req, res) => {
 const deleteItem = (req, res) => {
     try {
       const id = req.params.id;
-      const sql = 'call DeletePatientAndAppointments(?)';
-  
+      const sql = 'call deleteInventoryItemByID(?)';
+
       db.query(sql, [id], (err, result) => {
         if (err) {
           console.log(err);
