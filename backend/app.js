@@ -15,10 +15,12 @@ const port = process.env.PORT || 5000;
 const patientsRoute = require('./routes/patientsRoute');
 const inventoryRoute = require('./routes/inventoryRoute')
 const labTestRoute = require('./routes/labTestsRoute')
+const departmentRoute = require('./routes/departmentRoute')
 
 // Use Routes
 app.use('/api/v1/patients', patientsRoute);
 app.use('/api/v1/inventory', inventoryRoute);
 app.use('/api/v1/labtests', labTestRoute);
+app.use('/api/v1/departments', departmentRoute);
 
 module.exports = app;
