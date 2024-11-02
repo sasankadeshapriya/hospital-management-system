@@ -2,25 +2,37 @@ const db = require('../db');
 
 const addInventoryItem = async (req, res) => {
     try {
-        const id = req.params.id;
         const { MedicineName, Quantity, ExpiryDate, Cost } = req.body;
 
-        const values = [
-            MedicineName,
-            Quantity,
-            ExpiryDate,
-            Cost,
-        ];
-
-        const sql = "call insertInventoryItem(?, ?, ?, ?);";
-
-        db.query(sql, values, (err, result) => {
+        const checkSql = "SELECT * FROM Inventory WHERE MedicineName = ?";
+        db.query(checkSql, [MedicineName, ExpiryDate], (err, checkResult) => {
             if (err) {
-                console.error("Database error:", err);
+                console.error("Database error during inventory check:", err);
                 return res.status(500).json({ message: "Something unexpected has occurred" });
             }
-            console.log("Data updated successfully");
-            return res.status(200).json(result);
+
+            // If an item with the same MedicineName and ExpiryDate exists, return a conflict error
+            if (checkResult.length > 0) {
+                return res.status(409).json({ message: "An inventory item with this MedicineName already exists." });
+            }
+
+            const values = [
+                MedicineName,
+                Quantity,
+                ExpiryDate,
+                Cost,
+            ];
+
+            const sql = "call insertInventoryItem(?, ?, ?, ?);";
+
+            db.query(sql, values, (err, result) => {
+                if (err) {
+                    console.error("Database error:", err);
+                    return res.status(500).json({ message: "Something unexpected has occurred" });
+                }
+                console.log("Data updated successfully");
+                return res.status(200).json(result);
+            });
         });
     } catch (error) {
         console.error("Unexpected error:", error);
@@ -55,6 +67,9 @@ const getExpiredInventoryItems = async (req, res) => {
             if (err) {
                 console.log(err);
                 return res.status(500).json({ message: "Something unexpected has occurred" });
+            }
+            if (result.length === 0) {
+                return res.status(200).json({ message: "No expired inventory items found", data: [] });
             }
             console.log('Data retrieved successfully');
             return res.status(200).json(result);
