@@ -110,7 +110,33 @@ DELIMITER ;
 
 call insertSlot(101, 'monday', '10:00:00', '20:00:00');
 
+-- ================================================================================================================================================================================
+-- update slot
 
+DELIMITER $$
+CREATE PROCEDURE updateSlot(
+		slot_id int,
+		doc_id int,
+		room_no int,
+        day_ VARCHAR(20),
+        start_time time,
+        end_time time
+		
+	)
+	BEGIN
+    
+		UPDATE DoctorAvailability
+        SET
+			DoctorID = doc_id,
+            RoomNO = room_no,
+            AvailableDay = day_,
+            StartTime = start_time,
+            EndTime = end_time
+        WHERE AvailabilityID = slot_id;
+	END $$
+DELIMITER ;
+
+select * from DoctorAvailability;
 
 call getAvailabilitySlotsByRoomNo(101);
 delete from DoctorAvailability where AvailabilityID = 10;
