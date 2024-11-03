@@ -3,8 +3,9 @@
 
 create view vw_availabilitySlots
 as
-select AvailabilityID, DoctorID as 'Doctor Id',RoomNO as 'Room No', AvailableDay as 'Available Day', StartTime as 'Start Time', EndTime as 'End Time'
- from DoctorAvailability;
+select AvailabilityID, DoctorID as 'Doctor Id',RoomNO as 'Room No', AvailableDay as 'Available Day', StartTime as 'Start Time', EndTime as 'End Time', isActive
+ from DoctorAvailability
+ where isActive = true;
 
 select * from vw_availabilitySlots;
 
@@ -30,7 +31,7 @@ CREATE PROCEDURE getAvailabilitySlotsByDocID(id int)
 	BEGIN
 		select AvailabilityID, DoctorID as 'Doctor Id',RoomNO as 'Room No', AvailableDay as 'Available Day', StartTime as 'Start Time', EndTime as 'End Time'
 		from DoctorAvailability
-        where DoctorID = id;
+        where DoctorID = id and isActive = true;
 	END $$
 DELIMITER ;
 
@@ -44,7 +45,7 @@ CREATE PROCEDURE getAvailabilitySlotsByDay(day_ VARCHAR(20))
 	BEGIN
 		select AvailabilityID, DoctorID as 'Doctor Id',RoomNO as 'Room No', AvailableDay as 'Available Day', StartTime as 'Start Time', EndTime as 'End Time'
 		from DoctorAvailability
-        where LOWER(AvailableDay) = LOWER(day_);
+        where LOWER(AvailableDay) = LOWER(day_) AND isActive = true;
 	END $$
 DELIMITER ;
 
@@ -58,7 +59,7 @@ CREATE PROCEDURE getAvailabilitySlotsByRoomNo(room_no int)
 	BEGIN
 		select AvailabilityID, DoctorID as 'Doctor Id',RoomNO as 'Room No', AvailableDay as 'Available Day', StartTime as 'Start Time', EndTime as 'End Time'
 		from DoctorAvailability
-        where RoomNO = room_no;
+        where RoomNO = room_no AND isActive = true;
 	END $$
 DELIMITER ;
 
@@ -74,13 +75,13 @@ CREATE PROCEDURE checkAvailability(
         day_ VARCHAR(20),
         start_time time,
         end_time time
-		
 	)
 	BEGIN
 		select * 
 		from DoctorAvailability 
 		where RoomNO =  room_no
 			AND lower(AvailableDay) = lower(day_)
+            AND (isActive = true)
 			AND (
 					(start_time between StartTime and EndTime) OR
 					(end_time between StartTime and EndTime) OR
@@ -100,15 +101,14 @@ CREATE PROCEDURE insertSlot(
         day_ VARCHAR(20),
         start_time time,
         end_time time
-		
 	)
 	BEGIN
-		insert into DoctorAvailability(DoctorID, RoomNO, AvailableDay, StartTime, EndTime)
-        values(doc_id, room_no, day_, start_time, end_time);
+		insert into DoctorAvailability(DoctorID, RoomNO, AvailableDay, StartTime, EndTime, isActive)
+        values(doc_id, room_no, day_, start_time, end_time, true);
 	END $$
 DELIMITER ;
 
-call insertSlot(101, 'monday', '10:00:00', '20:00:00');
+call insertSlot(1,101, 'monday', '10:00:00', '20:00:00');
 
 -- ================================================================================================================================================================================
 -- update slot
@@ -121,10 +121,8 @@ CREATE PROCEDURE updateSlot(
         day_ VARCHAR(20),
         start_time time,
         end_time time
-		
 	)
 	BEGIN
-    
 		UPDATE DoctorAvailability
         SET
 			DoctorID = doc_id,
@@ -136,7 +134,19 @@ CREATE PROCEDURE updateSlot(
 	END $$
 DELIMITER ;
 
-select * from DoctorAvailability;
 
-call getAvailabilitySlotsByRoomNo(101);
-delete from DoctorAvailability where AvailabilityID = 10;
+-- ================================================================================================================================================================================
+-- delete slot - trigger / procedure
+
+DELIMITER $$
+CREATE PROCEDURE deleteAvailabilitySlotByID(IN slot_id INT)
+BEGIN
+   UPDATE DoctorAvailability
+        SET
+			isActive = 0
+        WHERE AvailabilityID = slot_id;
+END $$
+DELIMITER ;
+
+call deleteAvailabilitySlotByID(7);
+

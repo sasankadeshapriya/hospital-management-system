@@ -1,7 +1,6 @@
 CREATE DATABASE HMS;
 USE HMS;
 
-
 -- 1. Patients Table
 CREATE TABLE Patients (
     PatientID INT PRIMARY KEY auto_increment,  -- Unique identifier for each patient
@@ -57,6 +56,7 @@ CREATE TABLE DoctorAvailability (
     AvailableDay ENUM('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday') NOT NULL, -- Day of the week
     StartTime TIME NOT NULL,                        -- Start time of the availability slot
     EndTime TIME NOT NULL,                          -- End time of the availability slot
+    isActive boolean,
     FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID) ON DELETE CASCADE  -- Ensures availability is removed if doctor is deleted
 );
 
@@ -79,8 +79,6 @@ CREATE TABLE ConsultationQueue (
     FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID) ON DELETE CASCADE,  -- Link to Doctors table
     FOREIGN KEY (AvailabilityID) REFERENCES DoctorAvailability(AvailabilityID) ON DELETE CASCADE  -- Link to DoctorAvailability table
 );
-
-
 
 -- 5. Appointments Table
 CREATE TABLE Doctor_Appointments (
