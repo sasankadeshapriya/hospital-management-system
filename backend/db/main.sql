@@ -54,7 +54,7 @@ CREATE TABLE DoctorAvailability (
     AvailabilityID INT PRIMARY KEY AUTO_INCREMENT,  -- Unique identifier for each availability slot
     DoctorID INT NOT NULL,                          -- Foreign key to Doctors table
     RoomNO INT NOT NULL,                            -- Room number for the availability
-    AvailableDay ENUM('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday') NOT NULL, -- Day of the week
+    AvailableDay ENUM('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday') NOT NULL, -- Day of the week
     StartTime TIME NOT NULL,                        -- Start time of the availability slot
     EndTime TIME NOT NULL,                          -- End time of the availability slot
     FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID) ON DELETE CASCADE  -- Ensures availability is removed if doctor is deleted
