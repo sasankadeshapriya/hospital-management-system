@@ -34,16 +34,16 @@ INSERT INTO Doctors (DepartmentID, UserID, Specialization, Status, DOJ, isActive
 
 -- Sample Data for DoctorAvailability Table
 INSERT INTO DoctorAvailability (DoctorID, RoomNO, AvailableDay, StartTime, EndTime) VALUES
-    (1, 101, 'Monday', '09:00:00', '17:00:00'),
-    ( 1, 101, 'Wednesday', '09:00:00', '17:00:00'),
-    (2, 102, 'Tuesday', '10:00:00', '18:00:00'),
-    (2, 102, 'Thursday', '10:00:00', '18:00:00'),
-    (3, 103, 'Monday', '11:00:00', '15:00:00'),
-    (3, 103, 'Friday', '11:00:00', '15:00:00'),
-    (4, 104, 'Tuesday', '08:00:00', '16:00:00'),
-    (4, 104, 'Thursday', '08:00:00', '16:00:00'),
-    (5, 105, 'Wednesday', '09:30:00', '17:30:00'),
-    (5, 105, 'Saturday', '09:30:00', '17:30:00');
+    (1, 101, 'monday', '09:00:00', '17:00:00'),
+    ( 1, 101, 'wednesday', '09:00:00', '17:00:00'),
+    (2, 102, 'tuesday', '10:00:00', '18:00:00'),
+    (2, 102, 'thursday', '10:00:00', '18:00:00'),
+    (3, 103, 'monday', '11:00:00', '15:00:00'),
+    (3, 103, 'friday', '11:00:00', '15:00:00'),
+    (4, 104, 'tuesday', '08:00:00', '16:00:00'),
+    (4, 104, 'thursday', '08:00:00', '16:00:00'),
+    (5, 105, 'wednesday', '09:30:00', '17:30:00'),
+    (5, 105, 'saturday', '09:30:00', '17:30:00');
 
 -- Sample Data for LabTests Table
 INSERT INTO LabTests (TestName, ProcessingTime, Cost, isActive) VALUES
