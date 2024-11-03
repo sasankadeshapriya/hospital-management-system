@@ -148,11 +148,61 @@ const insertAvailabilitySlot = async (req, res) => {
     }
 }
 
+const updateAvailabilitySlot = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { DoctorID, RoomNO, AvailableDay, StartTime, EndTime} = req.body;
+
+        if (StartTime > EndTime) {
+           console.error("Time period invalid");
+           return res.status(409).json({ message: "Time period invalid" });
+        }
+
+        const checkSql = "call checkAvailability(?,?,?,?)";
+        db.query(checkSql, [RoomNO, AvailableDay, StartTime, EndTime], (err, checkResult) => {
+            if (err) {
+                console.error("Database error during availability check:", err);
+                return res.status(500).json({ message: "Something unexpected has occurred" });
+            }
+            const availableSlots = checkResult[0];
+
+
+            if (availableSlots.length > 0) {
+                return res.status(409).json({ message: "An availability slot with this room with this date and time already exists." });
+            }
+
+            const values = [
+                id,
+                DoctorID,
+                RoomNO,
+                AvailableDay,
+                StartTime,
+                EndTime
+            ];
+
+            const sql = "call updateSlot(?,?, ?, ?, ?, ?);";
+
+            db.query(sql, values, (err, result) => {
+                if (err) {
+                    console.error("Database error:", err);
+                    return res.status(500).json({ message: "Something unexpected has occurred" });
+                }
+                console.log("Data inserted successfully");
+                return res.status(200).json(result);
+            });
+        });
+    } catch (error) {
+        console.error("Unexpected error:", error);
+        return res.status(500).json({ message: "Something unexpected has occurred" });
+    }
+}
+
 module.exports = {
     getAvailabilitySlots,
     getAvailabilitySlotsById,
     getAvailabilitySlotsByDocId,
     getAvailabilitySlotsByDay,
     getAvailabilitySlotsByRoomNo,
-    insertAvailabilitySlot
+    insertAvailabilitySlot,
+    updateAvailabilitySlot
 }
