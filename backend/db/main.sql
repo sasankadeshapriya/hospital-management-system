@@ -88,7 +88,7 @@ CREATE TABLE Doctor_Appointments (
     Status VARCHAR(50) NOT NULL,                    -- Status (Pending, Confirmed, Completed)
     PatientID INT NOT NULL,                         -- Foreign key to the Patients table
     DoctorID INT,                                   -- Foreign key to the Doctors table
-    RoomNumber VARCHAR(50) NOT NULL,                -- Room number for the appointment
+    -- RoomNumber VARCHAR(50) NOT NULL,                -- Room number for the appointment
     -- QueueNumber INT NOT NULL,                       -- Queue number for the patient
     AppointmentType ENUM('Consultation', 'Lab'),           -- Type of appointment (Consultation or Lab Test)
     -- QueueID INT NOT NULL,                       -- Foreign key to the ConsultationQueue table

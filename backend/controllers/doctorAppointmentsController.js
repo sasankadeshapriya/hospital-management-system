@@ -83,31 +83,49 @@ const getDoctorAppointmentByPatientId = async (req, res) => {
     }
 }
 
-const getDoctorAppointmentByQueueId = async (req, res) => {
-    try {
-        const id = req.params.id;
-        const sql = 'call getDoctorAppointmentByQueueId(?);';
-
-        db.query(sql, [id], (err, result) => {
-            if (err) {
-                console.log(err);
-                return res.status(500).json({ message: "Something unexpected has occurred" });
-            }
-            console.log('Data retrieved successfully');
-            return res.status(200).json(result);
-        })
-    } catch (error) {
-        console.log(error);
-        res.status(500).send('Database query failed');
-    }
-}
-
 const insertDoctorAppointment = async (req, res) => {
     try {
-        
+        // req body -> all the fields in Doctor_Appointments, AvailabilityID of chosen doctor availability slot
+        const { AppointmentDate, AppointmentTime, Status, PatientID, DoctorID, AppointmentType, isActiveS, AvailabilityID } = req.body;
+
+        const checkSql = "SELECT * FROM Doctor_Appointments WHERE AppointmentDate = ? and PatientID = ? and DoctorID = ?";
+
+        db.query(checkSql, [AppointmentDate, PatientID, DoctorID], (err, checkResult) => {
+            if (err) {
+                console.error("Database error during appointment check:", err);
+                return res.status(500).json({ message: "Something unexpected has occurred" });
+            }
+
+            if (checkResult.length > 0) {
+                return res.status(409).json({ message: "A patient with this appointment is already registered." });
+            } else {
+                const sql = "SELECT insertDoctorAppointment(?,?,?,?,?,?,?,?)";
+
+                const values = [
+                    AppointmentDate,
+                    AppointmentTime,
+                    Status,
+                    PatientID,
+                    DoctorID,
+                    AppointmentType,
+                    isActiveS,
+                    AvailabilityID
+                ];
+
+                db.query(sql, values, (err, result) => {
+                    if (err) {
+                        console.error("Database error:", err);
+                        return res.status(500).json({ message: "Something unexpected has occurred" });
+                    }
+                    console.log("Data inserted successfully");
+                    return res.status(200).json(result);
+                });
+            }
+        });
+
     } catch (error) {
         console.error("Unexpected error:", error);
-        return res.status(500).json({ message: "Something unexpected has occurred" });
+        return res.status(500).json({ message: "Something unexpected has occurred :" });
     }
 }
 
@@ -116,5 +134,6 @@ module.exports = {
     getDoctorAppointmentById,
     getDoctorAppointmentByDocId,
     getDoctorAppointmentByPatientId,
-    getDoctorAppointmentByQueueId
+    insertDoctorAppointment
+    // getDoctorAppointmentByQueueId
 }
