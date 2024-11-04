@@ -163,12 +163,12 @@ INSERT INTO AccountTransactions (BillingID, AccountID, Amount, TransactionDate, 
     (5, 5, 2500.00, NOW(), 'Doctor', 'Consultation fee for Patient 5');
 
 -- Sample Data for ConsultationQueue_details Table
-INSERT INTO ConsultationQueue_details (D_AppointmentID, PatientID, QueueNumber, QueueID, DoctorID, Date) VALUES
-    (1, 1, 1, 1, 1, '2024-10-28'),
-    (2, 2, 2, 2, 4, '2024-10-29'),
-    (3, 3, 3, 3, 2, '2024-10-29'),
-    (4, 4, 4, 4, 3, '2024-11-03'),
-    (5, 5, 5, 5, 2, '2024-11-07');
+INSERT INTO ConsultationQueue_details (D_AppointmentID, PatientID, QueueNumber, QueueID, DoctorID, Date, isActive) VALUES
+    (1, 1, 1, 1, 1, '2024-10-28', 1),
+    (2, 2, 2, 2, 4, '2024-10-29', 1),
+    (3, 3, 3, 3, 2, '2024-10-29', 1),
+    (4, 4, 4, 4, 3, '2024-11-03', 1),
+    (5, 5, 5, 5, 2, '2024-11-07', 1);
 
 -- Sample Data for LabQueue Table
 INSERT INTO LabQueue (QueueID, TestID, Date) VALUES
@@ -204,4 +204,3 @@ INSERT INTO Notifications (PatientID, Message, NotificationDate, IsRead) VALUES
     
 ALTER TABLE Departments ADD  FOREIGN KEY (HOD) REFERENCES Doctors(DoctorID);
 ALTER TABLE Doctors ADD  FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID);
-ALTER TABLE DoctorAvailability ADD COLUMN isActive BOOLEAN DEFAULT TRUE;
