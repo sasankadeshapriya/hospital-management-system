@@ -11,7 +11,6 @@ const addLabTest = async (req, res) => {
                 return res.status(500).json({ message: "Something unexpected has occurred" });
             }
 
-            // If a lab test with the same TestName exists, return a conflict error
             if (checkResult.length > 0) {
                 return res.status(409).json({ message: "A lab test with this TestName is already registered." });
             }

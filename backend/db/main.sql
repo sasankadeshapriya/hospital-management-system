@@ -74,7 +74,7 @@ CREATE TABLE ConsultationQueue (
     DoctorID INT NOT NULL,                     -- Foreign key to the Doctors table
     Date DATE NOT NULL,
     AvailabilityID INT NOT NULL,                    -- Foreign key to the DoctorAvailability table
-    AppointmentDateTime DATETIME NOT NULL,                  -- Date of the appointment
+    AppointmentDateTime DATETIME NOT NULL,-- Date of the appointment
     PRIMARY KEY (QueueID, DoctorID, Date),
     FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID) ON DELETE CASCADE,  -- Link to Doctors table
     FOREIGN KEY (AvailabilityID) REFERENCES DoctorAvailability(AvailabilityID) ON DELETE CASCADE  -- Link to DoctorAvailability table
@@ -89,13 +89,13 @@ CREATE TABLE Doctor_Appointments (
     PatientID INT NOT NULL,                         -- Foreign key to the Patients table
     DoctorID INT,                                   -- Foreign key to the Doctors table
     RoomNumber VARCHAR(50) NOT NULL,                -- Room number for the appointment
-    QueueNumber INT NOT NULL,                       -- Queue number for the patient
+    -- QueueNumber INT NOT NULL,                       -- Queue number for the patient
     AppointmentType ENUM('Consultation', 'Lab'),           -- Type of appointment (Consultation or Lab Test)
-    QueueID INT NOT NULL,                       -- Foreign key to the ConsultationQueue table
+    -- QueueID INT NOT NULL,                       -- Foreign key to the ConsultationQueue table
     isActive boolean not null,
     FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
-    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID),
-    FOREIGN KEY (QueueID) REFERENCES ConsultationQueue(QueueID) -- Link to ConsultationQueue
+    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID)
+   --  FOREIGN KEY (QueueID) REFERENCES ConsultationQueue(QueueID) -- Link to ConsultationQueue
 );
 
 CREATE TABLE Lab_Appointments (
