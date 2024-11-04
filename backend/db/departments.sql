@@ -32,7 +32,8 @@ BEGIN
         UserAccounts u ON d.UserID = u.UserID
     WHERE 
         d.DepartmentID = departmentID
-        AND d.Status = 'Active';
+        AND d.Status = 'Active'
+        AND d.isActive = TRUE; 
 END //
 
 DELIMITER ;
@@ -66,8 +67,6 @@ CALL InsertDepartment('Cardiologydd', 1);
 
 -- -------------------------------------------------------------------------------------------------------------------------------------
 -- update department
-drop procedure UpdateDepartment;
-drop function IsHODAvailable;
 
 DELIMITER $$
 
@@ -80,7 +79,7 @@ BEGIN
 
     SELECT COUNT(*) > 0 INTO available
     FROM Doctors
-    WHERE DoctorID = hodID AND Status = 'Active';
+    WHERE DoctorID = hodID AND Status = 'Active' AND isActive = TRUE;
 
     RETURN available;
 END $$
