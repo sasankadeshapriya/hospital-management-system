@@ -1,3 +1,4 @@
+drop database hms;
 CREATE DATABASE HMS;
 USE HMS;
 

@@ -3,11 +3,14 @@
 
 create or replace view vw_doctor_appointments
 as
-select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType 
+select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType, DAV.RoomNO, CQD.QueueNumber
 from Doctor_Appointments DA
 INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
 INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
 INNER JOIN Patients P ON P.PatientID = DA.PatientID
+INNER JOIN ConsultationQueue_details CQD ON CQD.D_AppointmentID = DA.D_AppointmentID
+INNER JOIN ConsultationQueue CQ ON CQ.QueueID = CQD.QueueID
+INNER JOIN DoctorAvailability DAV ON DAV.AvailabilityID = CQ.AvailabilityID
 where DA.AppointmentDate >= current_date AND DA.isActive = 1;
 
 select * from vw_doctor_appointments;
@@ -18,11 +21,14 @@ select * from vw_doctor_appointments;
 DELIMITER $$
 CREATE PROCEDURE getDoctorAppointmentById(id int)
 	BEGIN
-		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType 
+		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO,CQD.QueueNumber
 		from Doctor_Appointments DA
 		INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
 		INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
 		INNER JOIN Patients P ON P.PatientID = DA.PatientID
+        INNER JOIN ConsultationQueue_details CQD ON CQD.D_AppointmentID = DA.D_AppointmentID
+		INNER JOIN ConsultationQueue CQ ON CQ.QueueID = CQD.QueueID
+		INNER JOIN DoctorAvailability DAV ON DAV.AvailabilityID = CQ.AvailabilityID
 		where DA.AppointmentDate >= current_date AND DA.D_AppointmentID = id;
 	END $$
 DELIMITER ;
@@ -35,18 +41,19 @@ call getDoctorAppointmentById(5);
 DELIMITER $$
 CREATE PROCEDURE getDoctorAppointmentByDocId(id int)
 	BEGIN
-		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType 
+		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO, CQD.QueueNumber
 		from Doctor_Appointments DA
 		INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
 		INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
 		INNER JOIN Patients P ON P.PatientID = DA.PatientID
+        INNER JOIN ConsultationQueue_details CQD ON CQD.D_AppointmentID = DA.D_AppointmentID
+		INNER JOIN ConsultationQueue CQ ON CQ.QueueID = CQD.QueueID
+		INNER JOIN DoctorAvailability DAV ON DAV.AvailabilityID = CQ.AvailabilityID
 		where DA.AppointmentDate >= current_date AND DA.DoctorID = id AND DA.isActive = 1;
 	END $$
 DELIMITER ;
 
 call getDoctorAppointmentByDocId(5);
-
-
 
 -- ================================================================================================================================================================================
 -- get doctor appointments by doctor id and date
@@ -54,11 +61,14 @@ call getDoctorAppointmentByDocId(5);
 DELIMITER $$
 CREATE PROCEDURE getDoctorAppointmentByDocIdAndDate(id int, Appointment_Date date)
 	BEGIN
-		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType 
+		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO, CQD.QueueNumber
 		from Doctor_Appointments DA
 		INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
 		INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
 		INNER JOIN Patients P ON P.PatientID = DA.PatientID
+        INNER JOIN ConsultationQueue_details CQD ON CQD.D_AppointmentID = DA.D_AppointmentID
+		INNER JOIN ConsultationQueue CQ ON CQ.QueueID = CQD.QueueID
+		INNER JOIN DoctorAvailability DAV ON DAV.AvailabilityID = CQ.AvailabilityID
 		where DA.AppointmentDate >= current_date AND DA.DoctorID = id AND DA.AppointmentDate = Appointment_Date AND DA.isActive = 1;
 	END $$
 DELIMITER ;
@@ -71,17 +81,19 @@ call getDoctorAppointmentByDocIdAndDate(5, '2024-11-13');
 DELIMITER $$
 CREATE PROCEDURE getDoctorAppointmentByPatientId(id int)
 	BEGIN
-		select DA.PatientID,DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType 
+		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO, CQD.QueueNumber
 		from Doctor_Appointments DA
 		INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
 		INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
 		INNER JOIN Patients P ON P.PatientID = DA.PatientID
+        INNER JOIN ConsultationQueue_details CQD ON CQD.D_AppointmentID = DA.D_AppointmentID
+		INNER JOIN ConsultationQueue CQ ON CQ.QueueID = CQD.QueueID
+		INNER JOIN DoctorAvailability DAV ON DAV.AvailabilityID = CQ.AvailabilityID
 		where DA.AppointmentDate >= current_date AND DA.PatientID = id AND DA.isActive = 1;
 	END $$
 DELIMITER ;
 
 call getDoctorAppointmentByPatientId(5);
-
 
 -- ================================================================================================================================================================================
 -- get doctor appointments by queue id
@@ -89,17 +101,19 @@ call getDoctorAppointmentByPatientId(5);
 DELIMITER $$
 CREATE PROCEDURE getDoctorAppointmentByQueueId(id int)
 	BEGIN
-		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name'
-		from ConsultationQueue_details CQD
-        INNER JOIN Doctor_Appointments DA ON CQD.D_AppointmentID = DA.D_AppointmentID
+		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO, CQD.QueueNumber
+		from Doctor_Appointments DA
 		INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
 		INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
-        INNER JOIN Patients P ON P.PatientID = CQD.PatientID
+		INNER JOIN Patients P ON P.PatientID = DA.PatientID
+        INNER JOIN ConsultationQueue_details CQD ON CQD.D_AppointmentID = DA.D_AppointmentID
+		INNER JOIN ConsultationQueue CQ ON CQ.QueueID = CQD.QueueID
+		INNER JOIN DoctorAvailability DAV ON DAV.AvailabilityID = CQ.AvailabilityID
 		where DA.AppointmentDate >= current_date AND CQD.QueueID = id AND CQD.isActive = 1;
 	END $$
 DELIMITER ;
 
-call getDoctorAppointmentByQueueId(7);
+call getDoctorAppointmentByQueueId(6);
 
 -- ================================================================================================================================================================================
 -- insert doctor appointments
@@ -149,15 +163,9 @@ deterministic
 	END $$
 DELIMITER ;
 
-SELECT insertDoctorAppointment(
-    '2024-11-06',  -- AppointmentDate (DATE format)
-    '11:30:00',    -- AppointmentTime (TIME format)
-    'Scheduled',   -- Status (VARCHAR)
-    2,           -- PatientID (INT)
-    1,           -- DoctorID (INT)
-    'Consultation',-- AppointmentType (VARCHAR)
-    2            -- AvailabilityID (INT)
-);
+-- SELECT insertDoctorAppointment(
+-- 	'2024-11-13', '09:30:00', 'Pending', 2, 5, 'Consultation', 5
+-- );
 
 
 -- ================================================================================================================================================================================
@@ -202,6 +210,7 @@ CREATE PROCEDURE updateAppointmentStatusById(id int, ap_status varchar(20))
 DELIMITER ;
 
 call updateAppointmentStatusById(2, 'confirmed');
+
 
 
 select * from Doctor_Appointments;
