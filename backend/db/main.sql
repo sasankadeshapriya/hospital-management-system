@@ -1,6 +1,7 @@
 CREATE DATABASE HMS;
 USE HMS;
 
+
 -- 1. Patients Table
 CREATE TABLE Patients (
     PatientID INT PRIMARY KEY auto_increment,  -- Unique identifier for each patient
