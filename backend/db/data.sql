@@ -68,13 +68,22 @@ INSERT INTO ConsultationQueue (DoctorID, Date, AvailabilityID, AppointmentDateTi
     (5, '2024-11-13', 9, '2024-11-13 09:30:00');
 
 -- Sample Data for Doctor_Appointments Table
-INSERT INTO Doctor_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, DoctorID, RoomNumber, QueueNumber, AppointmentType, QueueID, isActive) VALUES
-    ('2024-10-28', '09:00:00', 'Pending', 1, 1, '101', 1, 'Consultation', 1, true),
-    ('2024-10-29', '10:00:00', 'Pending', 2, 4, '104', 2, 'Consultation', 2, true),
-    ('2024-10-29', '10:00:00', 'Pending', 3, 2, '102', 3, 'Consultation', 3, true),
-    ('2024-11-03', '11:00:00', 'Pending', 4, 3, '103', 4, 'Consultation', 4, true),
-    ('2024-11-07', '08:00:00', 'Pending', 5, 2, '102', 5, 'Consultation', 5, true),
-    ('2024-11-13', '09:30:00', 'Pending', 1, 5, '105', 6, 'Consultation', 6, true);
+-- INSERT INTO Doctor_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, DoctorID, RoomNumber, QueueNumber, AppointmentType, QueueID, isActive) VALUES
+--     ('2024-10-28', '09:00:00', 'Pending', 1, 1, '101', 1, 'Consultation', 1, true),
+--     ('2024-10-29', '10:00:00', 'Pending', 2, 4, '104', 2, 'Consultation', 2, true),
+--     ('2024-10-29', '10:00:00', 'Pending', 3, 2, '102', 3, 'Consultation', 3, true),
+--     ('2024-11-03', '11:00:00', 'Pending', 4, 3, '103', 4, 'Consultation', 4, true),
+--     ('2024-11-07', '08:00:00', 'Pending', 5, 2, '102', 5, 'Consultation', 5, true),
+--     ('2024-11-13', '09:30:00', 'Pending', 1, 5, '105', 6, 'Consultation', 6, true);
+    
+    -- Sample Data for Doctor_Appointments Table
+INSERT INTO Doctor_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, DoctorID, RoomNumber, AppointmentType, isActive) VALUES
+    ('2024-10-28', '09:00:00', 'Pending', 1, 1, '101', 'Consultation', true),
+    ('2024-10-29', '10:00:00', 'Pending', 2, 4, '104', 'Consultation', true),
+    ('2024-10-29', '10:00:00', 'Pending', 3, 2, '102', 'Consultation', true),
+    ('2024-11-03', '11:00:00', 'Pending', 4, 3, '103', 'Consultation', true),
+    ('2024-11-07', '08:00:00', 'Pending', 5, 2, '102', 'Consultation', true),
+    ('2024-11-13', '09:30:00', 'Pending', 1, 5, '105', 'Consultation', true);
 
 -- Sample Data for Lab_Appointments Table
 INSERT INTO Lab_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, LabTestID, RoomNumber, QueueNumber, AppointmentType, isActive) VALUES
