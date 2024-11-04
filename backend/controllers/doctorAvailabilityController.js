@@ -23,7 +23,7 @@ const getAvailabilitySlotsById = async (req, res) => {
         const id = req.params.id;
         const sql = 'call getAvailabilitySlotsByID(?)';
 
-        db.query(sql,[id],(err, result) => {
+        db.query(sql, [id], (err, result) => {
             if (err) {
                 console.log(err);
                 return res.status(500).json({ message: "Something unexpected has occurred" });
@@ -42,7 +42,7 @@ const getAvailabilitySlotsByDocId = async (req, res) => {
         const id = req.params.id;
         const sql = 'call getAvailabilitySlotsByDocID(?)';
 
-        db.query(sql,[id],(err, result) => {
+        db.query(sql, [id], (err, result) => {
             if (err) {
                 console.log(err);
                 return res.status(500).json({ message: "Something unexpected has occurred" });
@@ -68,7 +68,7 @@ const getAvailabilitySlotsByDay = async (req, res) => {
 
         const sql = 'call getAvailabilitySlotsByDay(?)';
 
-        db.query(sql,[day],(err, result) => {
+        db.query(sql, [day], (err, result) => {
             if (err) {
                 console.log(err);
                 return res.status(500).json({ message: "Something unexpected has occurred" });
@@ -87,7 +87,7 @@ const getAvailabilitySlotsByRoomNo = async (req, res) => {
         const id = req.params.roomNo;
         const sql = 'call getAvailabilitySlotsByRoomNo(?)';
 
-        db.query(sql,[id],(err, result) => {
+        db.query(sql, [id], (err, result) => {
             if (err) {
                 console.log(err);
                 return res.status(500).json({ message: "Something unexpected has occurred" });
@@ -103,11 +103,11 @@ const getAvailabilitySlotsByRoomNo = async (req, res) => {
 
 const insertAvailabilitySlot = async (req, res) => {
     try {
-        const { DoctorID, RoomNO, AvailableDay, StartTime, EndTime} = req.body;
+        const { DoctorID, RoomNO, AvailableDay, StartTime, EndTime } = req.body;
 
         if (StartTime > EndTime) {
-           console.error("Time period invalid");
-           return res.status(409).json({ message: "Time period invalid" });
+            console.error("Time period invalid");
+            return res.status(409).json({ message: "Time period invalid" });
         }
 
         const checkSql = "call checkAvailability(?,?,?,?)";
@@ -121,26 +121,26 @@ const insertAvailabilitySlot = async (req, res) => {
 
             if (availableSlots.length > 0) {
                 return res.status(409).json({ message: "An availability slot with this room with this date and time already exists." });
+            } else {
+                const values = [
+                    DoctorID,
+                    RoomNO,
+                    AvailableDay,
+                    StartTime,
+                    EndTime
+                ];
+
+                const sql = "call insertSlot(?, ?, ?, ?, ?);";
+
+                db.query(sql, values, (err, result) => {
+                    if (err) {
+                        console.error("Database error:", err);
+                        return res.status(500).json({ message: "Something unexpected has occurred" });
+                    }
+                    console.log("Data inserted successfully");
+                    return res.status(200).json(result);
+                });
             }
-
-            const values = [
-                DoctorID,
-                RoomNO,
-                AvailableDay,
-                StartTime,
-                EndTime
-            ];
-
-            const sql = "call insertSlot(?, ?, ?, ?, ?);";
-
-            db.query(sql, values, (err, result) => {
-                if (err) {
-                    console.error("Database error:", err);
-                    return res.status(500).json({ message: "Something unexpected has occurred" });
-                }
-                console.log("Data inserted successfully");
-                return res.status(200).json(result);
-            });
         });
     } catch (error) {
         console.error("Unexpected error:", error);
@@ -151,11 +151,11 @@ const insertAvailabilitySlot = async (req, res) => {
 const updateAvailabilitySlot = async (req, res) => {
     try {
         const id = req.params.id;
-        const { DoctorID, RoomNO, AvailableDay, StartTime, EndTime} = req.body;
+        const { DoctorID, RoomNO, AvailableDay, StartTime, EndTime } = req.body;
 
         if (StartTime > EndTime) {
-           console.error("Time period invalid");
-           return res.status(409).json({ message: "Time period invalid" });
+            console.error("Time period invalid");
+            return res.status(409).json({ message: "Time period invalid" });
         }
 
         const checkSql = "call checkAvailability(?,?,?,?)";
@@ -202,7 +202,7 @@ const deleteAvailableSlotById = async (req, res) => {
         const id = req.params.id;
         const sql = 'call deleteAvailabilitySlotByID(?)';
 
-        db.query(sql,[id],(err, result) => {
+        db.query(sql, [id], (err, result) => {
             if (err) {
                 console.log(err);
                 return res.status(500).json({ message: "Something unexpected has occurred" });
