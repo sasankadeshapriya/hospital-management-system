@@ -3,9 +3,12 @@
 
 create or replace view vw_doctor_appointments
 as
-select * 
-from Doctor_Appointments
-where AppointmentDate >= current_date AND isActive = 1;
+select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType 
+from Doctor_Appointments DA
+INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
+INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
+INNER JOIN Patients P ON P.PatientID = DA.PatientID
+where DA.AppointmentDate >= current_date AND DA.isActive = 1;
 
 select * from vw_doctor_appointments;
 
@@ -15,9 +18,12 @@ select * from vw_doctor_appointments;
 DELIMITER $$
 CREATE PROCEDURE getDoctorAppointmentById(id int)
 	BEGIN
-		select * 
-		from Doctor_Appointments
-		where AppointmentDate >= current_date AND D_AppointmentID = id;
+		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType 
+		from Doctor_Appointments DA
+		INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
+		INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
+		INNER JOIN Patients P ON P.PatientID = DA.PatientID
+		where DA.AppointmentDate >= current_date AND DA.D_AppointmentID = id;
 	END $$
 DELIMITER ;
 
@@ -29,9 +35,12 @@ call getDoctorAppointmentById(5);
 DELIMITER $$
 CREATE PROCEDURE getDoctorAppointmentByDocId(id int)
 	BEGIN
-		select * 
-		from Doctor_Appointments
-		where AppointmentDate >= current_date AND DoctorID = id AND isActive = 1;
+		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType 
+		from Doctor_Appointments DA
+		INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
+		INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
+		INNER JOIN Patients P ON P.PatientID = DA.PatientID
+		where DA.AppointmentDate >= current_date AND DA.DoctorID = id AND DA.isActive = 1;
 	END $$
 DELIMITER ;
 
@@ -45,14 +54,16 @@ call getDoctorAppointmentByDocId(5);
 DELIMITER $$
 CREATE PROCEDURE getDoctorAppointmentByDocIdAndDate(id int, Appointment_Date date)
 	BEGIN
-		select * 
-		from Doctor_Appointments
-		where AppointmentDate >= current_date AND DoctorID = id AND AppointmentDate = Appointment_Date AND isActive = 1;
+		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType 
+		from Doctor_Appointments DA
+		INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
+		INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
+		INNER JOIN Patients P ON P.PatientID = DA.PatientID
+		where DA.AppointmentDate >= current_date AND DA.DoctorID = id AND DA.AppointmentDate = Appointment_Date AND DA.isActive = 1;
 	END $$
 DELIMITER ;
 
 call getDoctorAppointmentByDocIdAndDate(5, '2024-11-13');
-
 
 -- ================================================================================================================================================================================
 -- get doctor appointments by patient id
@@ -60,13 +71,17 @@ call getDoctorAppointmentByDocIdAndDate(5, '2024-11-13');
 DELIMITER $$
 CREATE PROCEDURE getDoctorAppointmentByPatientId(id int)
 	BEGIN
-		select * 
-		from Doctor_Appointments
-		where AppointmentDate >= current_date AND PatientID = id AND isActive = 1;
+		select DA.PatientID,DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType 
+		from Doctor_Appointments DA
+		INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
+		INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
+		INNER JOIN Patients P ON P.PatientID = DA.PatientID
+		where DA.AppointmentDate >= current_date AND DA.PatientID = id AND DA.isActive = 1;
 	END $$
 DELIMITER ;
 
 call getDoctorAppointmentByPatientId(5);
+
 
 -- ================================================================================================================================================================================
 -- get doctor appointments by queue id
@@ -86,9 +101,6 @@ DELIMITER ;
 
 call getDoctorAppointmentByQueueId(7);
 
-drop procedure getDoctorAppointmentByQueueId;
-
-DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, DA.PatientID, DA.DoctorID
 -- ================================================================================================================================================================================
 -- insert doctor appointments
 
@@ -180,9 +192,17 @@ call deleteAppointmentStatusById(1);
 -- ================================================================================================================================================================================
 -- update appointment status
 
+DELIMITER $$
+CREATE PROCEDURE updateAppointmentStatusById(id int, ap_status varchar(20))
+	BEGIN
+		UPDATE Doctor_Appointments 
+		SET Status =  ap_status
+		WHERE D_AppointmentID = id;
+	END $$
+DELIMITER ;
 
+call updateAppointmentStatusById(2, 'confirmed');
 
-call updateAppointmentStatus(1, 'confirmed');
 
 select * from Doctor_Appointments;
 select * from ConsultationQueue;
