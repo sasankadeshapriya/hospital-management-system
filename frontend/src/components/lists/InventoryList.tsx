@@ -8,9 +8,10 @@ import { ToastContext } from '../../context/ToastContext';
 
 interface InventoryListProps {
   searchQuery: string;
+  showExpired: boolean;
 }
 
-const InventoryList: React.FC<InventoryListProps> = ({ searchQuery }) => {
+const InventoryList: React.FC<InventoryListProps> = ({ searchQuery, showExpired }) => {
   const navigate = useNavigate();
   const { success, error } = useContext(ToastContext);
   const [inventoryItems, setInventoryItems] = useState<(InventoryItem & { id: number })[]>([]);
@@ -23,14 +24,16 @@ const InventoryList: React.FC<InventoryListProps> = ({ searchQuery }) => {
   useEffect(() => {
     const loadInventory = async () => {
       try {
-        const data = await InventoryService.fetchInventoryItems();
+        const data = showExpired
+          ? await InventoryService.fetchExpiredInventoryItems()
+          : await InventoryService.fetchInventoryItems();
         setInventoryItems(data.map((item) => ({ ...item, id: item.InventoryItemID })));
       } catch (error) {
         console.error('Error loading inventory items:', error);
       }
     };
     loadInventory();
-  }, []);
+  }, [showExpired]);
 
   const visibleItems = inventoryItems.filter(
     (item) => !hiddenItems.includes(item.InventoryItemID)
