@@ -8,19 +8,21 @@ interface TextInputProps {
   value: string;
   required?: boolean;
   placeholder?: string;
+  max?: string;
   step?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const TextInput: React.FC<TextInputProps> = ({ label, id, ...props }) => (
+export const TextInput: React.FC<TextInputProps> = ({ label, id, max, ...props }) => (
   <div>
     <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">
       {label}
     </label>
     <input
       id={id}
+      max={max} // Now we can use max because it's destructured from props
       className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      {...props}
+      {...props} // Spread the rest of the props here
     />
   </div>
 );

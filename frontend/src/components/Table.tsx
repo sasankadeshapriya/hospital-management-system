@@ -63,7 +63,7 @@ export function Table<T extends { id: number | string }>({
                 {columns.map((column, index) => (
                   <th
                     key={index}
-                    className={`px-6 py-4 text-left text-sm font-semibold text-gray-700 ${column.className || ''}`}
+                    className={`px-6 py-4 text-center text-sm font-semibold text-gray-700 ${column.className || ''}`}
                   >
                     {column.header}
                   </th>
