@@ -3,7 +3,7 @@
 
 create or replace view vw_doctor_appointments
 as
-select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType, DAV.RoomNO, CQD.QueueNumber
+select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType, DAV.RoomNO, CQD.QueueID, CQD.QueueNumber
 from Doctor_Appointments DA
 INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
 INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
@@ -21,7 +21,7 @@ select * from vw_doctor_appointments;
 DELIMITER $$
 CREATE PROCEDURE getDoctorAppointmentById(id int)
 	BEGIN
-		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO,CQD.QueueNumber
+		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO, CQD.QueueID,CQD.QueueNumber
 		from Doctor_Appointments DA
 		INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
 		INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
@@ -41,7 +41,7 @@ call getDoctorAppointmentById(5);
 DELIMITER $$
 CREATE PROCEDURE getDoctorAppointmentByDocId(id int)
 	BEGIN
-		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO, CQD.QueueNumber
+		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO, CQD.QueueID, CQD.QueueNumber
 		from Doctor_Appointments DA
 		INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
 		INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
@@ -61,7 +61,7 @@ call getDoctorAppointmentByDocId(5);
 DELIMITER $$
 CREATE PROCEDURE getDoctorAppointmentByDocIdAndDate(id int, Appointment_Date date)
 	BEGIN
-		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO, CQD.QueueNumber
+		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO, CQD.QueueID, CQD.QueueNumber
 		from Doctor_Appointments DA
 		INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
 		INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
@@ -81,7 +81,7 @@ call getDoctorAppointmentByDocIdAndDate(5, '2024-11-13');
 DELIMITER $$
 CREATE PROCEDURE getDoctorAppointmentByPatientId(id int)
 	BEGIN
-		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO, CQD.QueueNumber
+		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO, CQD.QueueID, CQD.QueueNumber
 		from Doctor_Appointments DA
 		INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
 		INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
@@ -101,7 +101,7 @@ call getDoctorAppointmentByPatientId(5);
 DELIMITER $$
 CREATE PROCEDURE getDoctorAppointmentByQueueId(id int)
 	BEGIN
-		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO, CQD.QueueNumber
+		select DA.D_AppointmentID,DA.AppointmentDate, DA.AppointmentTime, DA.Status, CONCAT(P.FirstName,' ',P.LastName) AS 'Patient Name', UA.Name AS 'Doctor Name', DA.AppointmentType ,DAV.RoomNO, CQD.QueueID, CQD.QueueNumber
 		from Doctor_Appointments DA
 		INNER JOIN Doctors D ON DA.DoctorID = D.DoctorID
 		INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
