@@ -62,15 +62,37 @@ CREATE PROCEDURE addPatient(
         IN p_isActive bool
 )
 BEGIN
-        -- Insert new patient
-        INSERT INTO Patients (FirstName, LastName, DOB, Gender, ContactNumber, Address, CNIC, isActive)
-        VALUES (p_FirstName, p_LastName, p_DOB, p_Gender, p_ContactNumber, p_Address, p_CNIC, p_isActive);
-    
+        DECLARE cnic_no VARCHAR(20);
+        DECLARE isAct boolean;
+        SELECT CNIC INTO cnic_no FROM Patients WHERE CNIC = p_CNIC;
+		SELECT isActive INTO isAct FROM Patients  WHERE CNIC = p_CNIC;
+        
+        if cnic_no is null then
+        
+			INSERT INTO Patients (FirstName, LastName, DOB, Gender, ContactNumber, Address, CNIC, isActive)
+			VALUES (p_FirstName, p_LastName, p_DOB, p_Gender, p_ContactNumber, p_Address, p_CNIC, p_isActive);
+		
+        else
+			if isAct = 0 then
+				UPDATE Patients
+				SET 
+					FirstName = p_FirstName,
+					LastName = p_LastName,
+					DOB = p_DOB,
+					Gender = p_Gender,
+					ContactNumber = p_ContactNumber,
+					Address = p_Address,
+					CNIC = p_CNIC,
+					isActive = p_isActive
+				WHERE CNIC = p_CNIC;
+			else
+				select "Patient already exist" as Warning;
+			end if;
+		end if;    
 END $$
-
 DELIMITER ;
 
-CALL addPatient('Kavindu', 'Sasanka', '2000-12-19', 'M', '0763456789', 'Temple Road, Waralla', '5656', true);
+CALL addPatient('Charlie', 'Black', '1985-01-22', 'M', '0712345681', '789 Black St, Colombo', '923456792V', true);
 
 -- ================================================================================================================================================================================
 
@@ -106,4 +128,4 @@ END $$
 
 DELIMITER ;
 
-call DeletePatientAndAppointments(3);
+call DeletePatientAndAppointments(6);

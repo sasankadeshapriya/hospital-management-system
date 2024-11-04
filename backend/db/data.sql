@@ -33,17 +33,17 @@ INSERT INTO Doctors (DepartmentID, UserID, Specialization, Status, DOJ, isActive
     (5, 5, 'Orthopedic Surgeon', 'Active', '2014-05-25', true);
 
 -- Sample Data for DoctorAvailability Table
-INSERT INTO DoctorAvailability (DoctorID, RoomNO, AvailableDay, StartTime, EndTime) VALUES
-    (1, 101, 'Monday', '09:00:00', '17:00:00'),
-    ( 1, 101, 'Wednesday', '09:00:00', '17:00:00'),
-    (2, 102, 'Tuesday', '10:00:00', '18:00:00'),
-    (2, 102, 'Thursday', '10:00:00', '18:00:00'),
-    (3, 103, 'Monday', '11:00:00', '15:00:00'),
-    (3, 103, 'Friday', '11:00:00', '15:00:00'),
-    (4, 104, 'Tuesday', '08:00:00', '16:00:00'),
-    (4, 104, 'Thursday', '08:00:00', '16:00:00'),
-    (5, 105, 'Wednesday', '09:30:00', '17:30:00'),
-    (5, 105, 'Saturday', '09:30:00', '17:30:00');
+INSERT INTO DoctorAvailability (DoctorID, RoomNO, AvailableDay, StartTime, EndTime, isActive) VALUES
+    (1, 101, 'monday', '09:00:00', '17:00:00', true),
+    ( 1, 101, 'wednesday', '09:00:00', '17:00:00', true),
+    (2, 102, 'tuesday', '10:00:00', '18:00:00', true),
+    (2, 102, 'thursday', '10:00:00', '18:00:00', true),
+    (3, 103, 'monday', '11:00:00', '15:00:00', true),
+    (3, 103, 'friday', '11:00:00', '15:00:00', true),
+    (4, 104, 'tuesday', '08:00:00', '16:00:00', true),
+    (4, 104, 'thursday', '08:00:00', '16:00:00', true),
+    (5, 105, 'wednesday', '09:30:00', '17:30:00', true),
+    (5, 105, 'saturday', '09:30:00', '17:30:00', true);
 
 -- Sample Data for LabTests Table
 INSERT INTO LabTests (TestName, ProcessingTime, Cost, isActive) VALUES
@@ -68,13 +68,22 @@ INSERT INTO ConsultationQueue (DoctorID, Date, AvailabilityID, AppointmentDateTi
     (5, '2024-11-13', 9, '2024-11-13 09:30:00');
 
 -- Sample Data for Doctor_Appointments Table
-INSERT INTO Doctor_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, DoctorID, RoomNumber, QueueNumber, AppointmentType, QueueID, isActive) VALUES
-    ('2024-10-28', '09:00:00', 'Pending', 1, 1, '101', 1, 'Consultation', 1, true),
-    ('2024-10-29', '10:00:00', 'Pending', 2, 4, '104', 2, 'Consultation', 2, true),
-    ('2024-10-29', '10:00:00', 'Pending', 3, 2, '102', 3, 'Consultation', 3, true),
-    ('2024-11-03', '11:00:00', 'Pending', 4, 3, '103', 4, 'Consultation', 4, true),
-    ('2024-11-07', '08:00:00', 'Pending', 5, 2, '102', 5, 'Consultation', 5, true),
-    ('2024-11-13', '09:30:00', 'Pending', 1, 5, '105', 6, 'Consultation', 6, true);
+-- INSERT INTO Doctor_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, DoctorID, RoomNumber, QueueNumber, AppointmentType, QueueID, isActive) VALUES
+--     ('2024-10-28', '09:00:00', 'Pending', 1, 1, '101', 1, 'Consultation', 1, true),
+--     ('2024-10-29', '10:00:00', 'Pending', 2, 4, '104', 2, 'Consultation', 2, true),
+--     ('2024-10-29', '10:00:00', 'Pending', 3, 2, '102', 3, 'Consultation', 3, true),
+--     ('2024-11-03', '11:00:00', 'Pending', 4, 3, '103', 4, 'Consultation', 4, true),
+--     ('2024-11-07', '08:00:00', 'Pending', 5, 2, '102', 5, 'Consultation', 5, true),
+--     ('2024-11-13', '09:30:00', 'Pending', 1, 5, '105', 6, 'Consultation', 6, true);
+    
+    -- Sample Data for Doctor_Appointments Table
+INSERT INTO Doctor_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, DoctorID, AppointmentType, isActive) VALUES
+    ('2024-10-28', '09:00:00', 'Pending', 1, 1, 'Consultation', true),
+    ('2024-10-29', '10:00:00', 'Pending', 2, 4,  'Consultation', true),
+    ('2024-10-29', '10:00:00', 'Pending', 3, 2, 'Consultation', true),
+    ('2024-11-03', '11:00:00', 'Pending', 4, 3, 'Consultation', true),
+    ('2024-11-07', '08:00:00', 'Pending', 5, 2, 'Consultation', true),
+    ('2024-11-13', '09:30:00', 'Pending', 1, 5, 'Consultation', true);
 
 -- Sample Data for Lab_Appointments Table
 INSERT INTO Lab_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, LabTestID, RoomNumber, QueueNumber, AppointmentType, isActive) VALUES

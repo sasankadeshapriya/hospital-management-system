@@ -77,43 +77,27 @@ const updatePatient = async (req, res) => {
 const addPatient = async (req, res) => {
   try {
     const { FirstName, LastName, DOB, Gender, ContactNumber, Address, CNIC, isActive } = req.body;
+    const sql = "CALL addPatient(?, ?, ?, ?, ?, ?, ?, ?)";
 
-    const checkSql = "SELECT * FROM Patients WHERE CNIC = ?";
+    const values = [
+      FirstName,
+      LastName,
+      DOB,
+      Gender,
+      ContactNumber,
+      Address,
+      CNIC,
+      isActive
+    ];
 
-    db.query(checkSql, [CNIC], (err, checkResult) => {
+    db.query(sql, values, (err, result) => {
       if (err) {
-        console.error("Database error during CNIC check:", err);
+        console.error("Database error:", err);
         return res.status(500).json({ message: "Something unexpected has occurred" });
       }
-
-      // If a patient with the same CNIC exists, return a conflict error
-      if (checkResult.length > 0) {
-        return res.status(409).json({ message: "A patient with this CNIC is already registered." });
-      }
-
-      const sql = "CALL addPatient(?, ?, ?, ?, ?, ?, ?, ?)";
-
-      const values = [
-        FirstName,
-        LastName,
-        DOB,
-        Gender,
-        ContactNumber,
-        Address,
-        CNIC,
-        isActive
-      ];
-
-      db.query(sql, values, (err, result) => {
-        if (err) {
-          console.error("Database error:", err);
-          return res.status(500).json({ message: "Something unexpected has occurred" });
-        }
-        console.log("Data inserted successfully");
-        return res.status(200).json(result);
-      });
+      console.log("Data inserted successfully");
+      return res.status(200).json(result);
     });
-
   } catch (error) {
     console.error("Unexpected error:", error);
     return res.status(500).json({ message: "Something unexpected has occurred :" });

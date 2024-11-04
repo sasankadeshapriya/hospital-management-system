@@ -54,9 +54,10 @@ CREATE TABLE DoctorAvailability (
     AvailabilityID INT PRIMARY KEY AUTO_INCREMENT,  -- Unique identifier for each availability slot
     DoctorID INT NOT NULL,                          -- Foreign key to Doctors table
     RoomNO INT NOT NULL,                            -- Room number for the availability
-    AvailableDay ENUM('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday') NOT NULL, -- Day of the week
+    AvailableDay ENUM('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday') NOT NULL, -- Day of the week
     StartTime TIME NOT NULL,                        -- Start time of the availability slot
     EndTime TIME NOT NULL,                          -- End time of the availability slot
+    isActive boolean,
     FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID) ON DELETE CASCADE  -- Ensures availability is removed if doctor is deleted
 );
 
@@ -74,13 +75,11 @@ CREATE TABLE ConsultationQueue (
     DoctorID INT NOT NULL,                     -- Foreign key to the Doctors table
     Date DATE NOT NULL,
     AvailabilityID INT NOT NULL,                    -- Foreign key to the DoctorAvailability table
-    AppointmentDateTime DATETIME NOT NULL,                  -- Date of the appointment
+    AppointmentDateTime DATETIME NOT NULL,-- Date of the appointment
     PRIMARY KEY (QueueID, DoctorID, Date),
     FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID) ON DELETE CASCADE,  -- Link to Doctors table
     FOREIGN KEY (AvailabilityID) REFERENCES DoctorAvailability(AvailabilityID) ON DELETE CASCADE  -- Link to DoctorAvailability table
 );
-
-
 
 -- 5. Appointments Table
 CREATE TABLE Doctor_Appointments (
@@ -90,14 +89,14 @@ CREATE TABLE Doctor_Appointments (
     Status VARCHAR(50) NOT NULL,                    -- Status (Pending, Confirmed, Completed)
     PatientID INT NOT NULL,                         -- Foreign key to the Patients table
     DoctorID INT,                                   -- Foreign key to the Doctors table
-    RoomNumber VARCHAR(50) NOT NULL,                -- Room number for the appointment
-    QueueNumber INT NOT NULL,                       -- Queue number for the patient
+    -- RoomNumber VARCHAR(50) NOT NULL,                -- Room number for the appointment
+    -- QueueNumber INT NOT NULL,                       -- Queue number for the patient
     AppointmentType ENUM('Consultation', 'Lab'),           -- Type of appointment (Consultation or Lab Test)
-    QueueID INT NOT NULL,                       -- Foreign key to the ConsultationQueue table
+    -- QueueID INT NOT NULL,                       -- Foreign key to the ConsultationQueue table
     isActive boolean not null,
     FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
-    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID),
-    FOREIGN KEY (QueueID) REFERENCES ConsultationQueue(QueueID) -- Link to ConsultationQueue
+    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID)
+   --  FOREIGN KEY (QueueID) REFERENCES ConsultationQueue(QueueID) -- Link to ConsultationQueue
 );
 
 CREATE TABLE Lab_Appointments (
