@@ -1,7 +1,6 @@
 CREATE DATABASE HMS;
 USE HMS;
 
-
 -- 1. Patients Table
 CREATE TABLE Patients (
     PatientID INT PRIMARY KEY auto_increment,  -- Unique identifier for each patient
@@ -89,10 +88,7 @@ CREATE TABLE Doctor_Appointments (
     Status VARCHAR(50) NOT NULL,                    -- Status (Pending, Confirmed, Completed)
     PatientID INT NOT NULL,                         -- Foreign key to the Patients table
     DoctorID INT,                                   -- Foreign key to the Doctors table
-    -- RoomNumber VARCHAR(50) NOT NULL,                -- Room number for the appointment
-    -- QueueNumber INT NOT NULL,                       -- Queue number for the patient
     AppointmentType ENUM('Consultation', 'Lab'),           -- Type of appointment (Consultation or Lab Test)
-    -- QueueID INT NOT NULL,                       -- Foreign key to the ConsultationQueue table
     isActive boolean not null,
     FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
     FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID)
@@ -225,6 +221,7 @@ CREATE TABLE ConsultationQueue_details (
 	QueueID INT NOT NULL,
 	DoctorID INT NOT NULL,
 	Date DATE NOT NULL,
+    isActive boolean,
     FOREIGN KEY (QueueID, DoctorID, Date) REFERENCES ConsultationQueue(QueueID, DoctorID, Date),
     FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
 	FOREIGN KEY (D_AppointmentID) REFERENCES Doctor_Appointments(D_AppointmentID)
