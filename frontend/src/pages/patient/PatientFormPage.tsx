@@ -1,24 +1,24 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { TextInput, SelectInput, TextArea, FileInput } from '../../components/FormComponents'; // Import the components
-
-interface Patient {
-  name: string;
-  dob: string;
-  gender: string;
-  phone: string;
-  address: string;
-  cnic: string;
-  photo?: string;
-}
+import { TextInput, SelectInput, TextArea } from '../../components/FormComponents';
+import PatientService from '../../services/PatientService';
+import { ToastContext } from '../../context/ToastContext';
 
 interface PatientFormProps {
-  initialData?: Patient;
+  initialData?: {
+    name: string;
+    dob: string;
+    gender: string;
+    phone: string;
+    address: string;
+    cnic: string;
+  };
 }
 
 export function PatientFormPage({ initialData }: PatientFormProps) {
   const navigate = useNavigate();
+  const { success, error } = useContext(ToastContext);
   const [formData, setFormData] = useState({
     firstName: initialData?.name.split(' ')[0] || '',
     lastName: initialData?.name.split(' ')[1] || '',
@@ -27,27 +27,42 @@ export function PatientFormPage({ initialData }: PatientFormProps) {
     contactNumber: initialData?.phone || '',
     address: initialData?.address || '',
     cnic: initialData?.cnic || '',
-    photo: initialData?.photo || '',
   });
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, photo: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/patients');
+    try {
+      await PatientService.addPatient({
+        FirstName: formData.firstName,
+        LastName: formData.lastName,
+        DOB: formData.dob,
+        Gender: formData.gender === 'Male' ? 'M' : 'F',
+        ContactNumber: formData.contactNumber,
+        Address: formData.address,
+        CNIC: formData.cnic,
+        isActive: true,
+      });
+      success('Patient added successfully!');
+      setFormData({
+        firstName: '',
+        lastName: '',
+        dob: '',
+        gender: '',
+        contactNumber: '',
+        address: '',
+        cnic: '',
+      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        error(err.message);
+      } else {
+        error('Failed to add patient. Please try again.');
+      }
+    }
   };
 
   return (
@@ -130,13 +145,6 @@ export function PatientFormPage({ initialData }: PatientFormProps) {
             value={formData.cnic}
             onChange={(e) => handleInputChange('cnic', e.target.value)}
             placeholder="Enter CNIC"
-          />
-
-          <FileInput
-            label="Upload Profile Picture"
-            id="photo"
-            onChange={handleFileChange}
-            photo={formData.photo}
           />
 
           <div className="flex justify-end gap-4">
