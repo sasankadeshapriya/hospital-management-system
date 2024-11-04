@@ -86,9 +86,112 @@ call getDoctorAppointmentByQueueId(5);
 -- ================================================================================================================================================================================
 -- insert doctor appointments
 
+-- DELIMITER $$
+-- CREATE function insertDoctorAppointment(
+-- 		AppointmentDate_ DATE,
+-- 		AppointmentTime_ TIME,
+-- 		Status_ VARCHAR(50),
+-- 		PatientID_ INT,
+-- 		DoctorID_ INT,
+-- 		AppointmentType_ VARCHAR(20),
+-- 		isActive_ boolean,
+--         AvailabilityID_ int
+-- 	)
+-- returns boolean
+-- deterministic
+-- 	BEGIN
+-- 		DECLARE queue_id int;
+--         DECLARE appointment_id int;
+--         DECLARE last_queue_number INT DEFAULT 0;
+--         
+-- 		INSERT INTO Doctor_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, DoctorID, AppointmentType, isActive)
+--         values (AppointmentDate_, AppointmentTime_, Status_, PatientID_, DoctorID_, AppointmentType_, isActive_);
+--         
+--         SELECT QueueID INTO queue_id FROM ConsultationQueue WHERE DoctorID = DoctorID_ AND Date = AppointmentDate_;
+--         SELECT D_AppointmentID INTO appointment_id FROM Doctor_Appointments WHERE DoctorID = DoctorID_ AND AppointmentDate = AppointmentDate_ and PatientID = PatientID_;
+--         
+-- 			IF queue_id IS NULL THEN
+-- 				INSERT INTO ConsultationQueue(DoctorID, Date, AvailabilityID, AppointmentDateTime)
+-- 				VALUES(DoctorID_, AppointmentDate_, AvailabilityID_, CONCAT(AppointmentDate_, ' ', AppointmentTime_));
+-- 				
+-- 				SET queue_id = LAST_INSERT_ID();
+-- 				
+-- 				INSERT INTO ConsultationQueue_details(D_AppointmentID, PatientID, QueueNumber, QueueID, DoctorID, Date)
+-- 				VALUES (appointment_id, PatientID_, 1, queue_id, DoctorID_, AppointmentDate_);
+-- 			ELSE
+-- 			
+-- 				 SELECT IFNULL(MAX(QueueNumber), 0) + 1 INTO last_queue_number 
+-- 				FROM ConsultationQueue_details 
+-- 				WHERE QueueID = queue_id;
+-- 				
+-- 				INSERT INTO ConsultationQueue_details(D_AppointmentID, PatientID, QueueNumber, QueueID, DoctorID, Date)
+-- 				VALUES (appointment_id, PatientID_, last_queue_number, queue_id, DoctorID_, AppointmentDate_);
+-- 			END IF;
+--             
+-- 		return true;
+-- 	END $$
+-- DELIMITER ;
 
 
+DELIMITER $$
+CREATE function insertDoctorAppointment(
+		AppointmentDate_ DATE,
+		AppointmentTime_ TIME,
+		Status_ VARCHAR(50),
+		PatientID_ INT,
+		DoctorID_ INT,
+		AppointmentType_ VARCHAR(20),
+		isActive_ boolean,
+        AvailabilityID_ int
+	)
+returns boolean
+deterministic
+	BEGIN
+		DECLARE queue_id int;
+        DECLARE appointment_id int;
+        DECLARE last_queue_number INT DEFAULT 0;
+        
+		INSERT INTO Doctor_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, DoctorID, AppointmentType, isActive)
+        values (AppointmentDate_, AppointmentTime_, Status_, PatientID_, DoctorID_, AppointmentType_, isActive_);
+        
+        SELECT QueueID INTO queue_id FROM ConsultationQueue WHERE DoctorID = DoctorID_ AND Date = AppointmentDate_;
+        SELECT D_AppointmentID INTO appointment_id FROM Doctor_Appointments WHERE DoctorID = DoctorID_ AND AppointmentDate = AppointmentDate_ and PatientID = PatientID_;
+        
+			IF queue_id IS NULL THEN
+				INSERT INTO ConsultationQueue(DoctorID, Date, AvailabilityID, AppointmentDateTime)
+				VALUES(DoctorID_, AppointmentDate_, AvailabilityID_, CONCAT(AppointmentDate_, ' ', AppointmentTime_));
+				
+				SET queue_id = LAST_INSERT_ID();
+				
+				INSERT INTO ConsultationQueue_details(D_AppointmentID, PatientID, QueueNumber, QueueID, DoctorID, Date)
+				VALUES (appointment_id, PatientID_, 1, queue_id, DoctorID_, AppointmentDate_);
+			ELSE
+			
+				SELECT IFNULL(MAX(QueueNumber), 0) + 1 INTO last_queue_number 
+				FROM ConsultationQueue_details 
+				WHERE QueueID = queue_id;
+				
+				INSERT INTO ConsultationQueue_details(D_AppointmentID, PatientID, QueueNumber, QueueID, DoctorID, Date)
+				VALUES (appointment_id, PatientID_, last_queue_number, queue_id, DoctorID_, AppointmentDate_);
+			END IF;
+            
+		return true;
+	END $$
+DELIMITER ;
 
+SELECT insertDoctorAppointment(
+    '2024-11-05',  -- AppointmentDate (DATE format)
+    '11:30:00',    -- AppointmentTime (TIME format)
+    'Scheduled',   -- Status (VARCHAR)
+    2,           -- PatientID (INT)
+    1,           -- DoctorID (INT)
+    'Consultation',-- AppointmentType (VARCHAR)
+    TRUE,          -- isActive (BOOLEAN)
+    2            -- AvailabilityID (INT)
+);
 
+call getDoctorAppointmentByQueueId(5);
 
-
+select * from Doctor_Appointments;
+select * from ConsultationQueue;
+select * from ConsultationQueue_details;
