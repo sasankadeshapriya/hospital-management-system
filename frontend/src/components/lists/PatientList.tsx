@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Table } from '../Table';
 import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PatientService, { Patient } from '../../services/PatientService';
 import ConfirmationModal from '../modal/ConfirmationModal';
+import { ToastContext } from '../../context/ToastContext';
 
 interface PatientListProps {
   onPatientSelect: (patientId: number) => void;
@@ -11,8 +12,9 @@ interface PatientListProps {
   searchQuery: string;
 }
 
-const PatientList: React.FC<PatientListProps> = ({searchQuery }) => {
+const PatientList: React.FC<PatientListProps> = ({ searchQuery }) => {
   const navigate = useNavigate();
+  const { success, error: showError } = useContext(ToastContext);
   const [patients, setPatients] = useState<(Patient & { id: number })[]>([]);
   const [hiddenPatients, setHiddenPatients] = useState<number[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -39,12 +41,13 @@ const PatientList: React.FC<PatientListProps> = ({searchQuery }) => {
       try {
         const data = await PatientService.fetchPatients();
         setPatients(data.map((patient) => ({ ...patient, id: patient.PatientID })));
-      } catch (error) {
-        console.error('Error loading patients:', error);
+      } catch (err) {
+        console.error('Error loading patients:', err);
+        showError('Failed to load patients');
       }
     };
     loadPatients();
-  }, []);
+  }, [showError]);
 
   const visiblePatients = patients.filter(({ PatientID }) => !hiddenPatients.includes(PatientID));
 
@@ -85,9 +88,10 @@ const PatientList: React.FC<PatientListProps> = ({searchQuery }) => {
       try {
         await PatientService.deletePatient(patientToDelete);
         setHiddenPatients((prevHidden) => [...prevHidden, patientToDelete]);
-        console.log('Patient deleted successfully');
-      } catch (error) {
-        console.error('Error deleting patient:', error);
+        success('Patient deleted successfully');
+      } catch (err) {
+        console.error('Error deleting patient:', err);
+        showError('Failed to delete patient');
       } finally {
         setShowModal(false);
         setPatientToDelete(null);

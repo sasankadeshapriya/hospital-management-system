@@ -7,13 +7,13 @@ import DoctorDetails from './pages/doctor/DoctorDetailsPage';
 import LoginPage from './pages/auth/LoginPage';
 import PatientsPage from './pages/patient/PatientsPage';
 import PatientDetails from './pages/patient/PatientDetailsPage';
-import {PatientFormPage} from './pages/patient/PatientFormPage';
-import {DoctorFormPage} from './pages/doctor/DoctorFormPage';
+import { PatientFormPage } from './pages/patient/PatientFormPage';
+import { DoctorFormPage } from './pages/doctor/DoctorFormPage';
 import DoctorAppointmentsPage from './pages/appointment/DoctorAppointmentsPage';
 import InventoryPage from './pages/inventory/InventoryPage';
-import {InventoryFormPage} from './pages/inventory/InventoryFormPage';
+import { InventoryFormPage } from './pages/inventory/InventoryFormPage';
 import StaffPage from './pages/staff/StaffPage';
-import {StaffFormPage} from './pages/staff/StaffFormPage';
+import { StaffFormPage } from './pages/staff/StaffFormPage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
