@@ -1,6 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { TextInput, SelectInput, TextArea } from '../../components/FormComponents';
 import PatientService from '../../services/PatientService';
 import { ToastContext } from '../../context/ToastContext';
@@ -18,7 +18,9 @@ interface PatientFormProps {
 
 export function PatientFormPage({ initialData }: PatientFormProps) {
   const navigate = useNavigate();
+  const { id: patientId } = useParams<{ id: string }>(); // Get patientId from the route if available
   const { success, error } = useContext(ToastContext);
+
   const [formData, setFormData] = useState({
     firstName: initialData?.name.split(' ')[0] || '',
     lastName: initialData?.name.split(' ')[1] || '',
@@ -28,6 +30,40 @@ export function PatientFormPage({ initialData }: PatientFormProps) {
     address: initialData?.address || '',
     cnic: initialData?.cnic || '',
   });
+  const [initialFormData, setInitialFormData] = useState(formData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Helper function to format date to YYYY-MM-DD for input
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  };
+
+  // Populate formData if editing an existing patient
+  useEffect(() => {
+    const loadPatientData = async () => {
+      if (patientId) {
+        try {
+          const patient = await PatientService.fetchPatientById(Number(patientId));
+          const newFormData = {
+            firstName: patient.FirstName,
+            lastName: patient.LastName,
+            dob: formatDate(patient.DOB),
+            gender: patient.Gender === 'M' ? 'Male' : 'Female',
+            contactNumber: patient.ContactNumber,
+            address: patient.Address,
+            cnic: patient.CNIC,
+          };
+          setFormData(newFormData);
+          setInitialFormData(newFormData); // Set initial form data for change detection
+        } catch (err) {
+          error('Failed to load patient details.');
+          console.error(err);
+        }
+      }
+    };
+    loadPatientData();
+  }, [patientId, error]);
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -35,35 +71,66 @@ export function PatientFormPage({ initialData }: PatientFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Prevent submission if data hasn't changed
+    if (JSON.stringify(formData) === JSON.stringify(initialFormData)) {
+      error('No changes detected');
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
-      await PatientService.addPatient({
-        FirstName: formData.firstName,
-        LastName: formData.lastName,
-        DOB: formData.dob,
-        Gender: formData.gender === 'Male' ? 'M' : 'F',
-        ContactNumber: formData.contactNumber,
-        Address: formData.address,
-        CNIC: formData.cnic,
-        isActive: true,
-      });
-      success('Patient added successfully!');
-      setFormData({
-        firstName: '',
-        lastName: '',
-        dob: '',
-        gender: '',
-        contactNumber: '',
-        address: '',
-        cnic: '',
-      });
+      if (patientId) {
+        // Update existing patient
+        await PatientService.updatePatient(Number(patientId), {
+          FirstName: formData.firstName,
+          LastName: formData.lastName,
+          DOB: formData.dob,
+          Gender: formData.gender === 'Male' ? 'M' : 'F',
+          ContactNumber: formData.contactNumber,
+          Address: formData.address,
+          CNIC: formData.cnic,
+          isActive: true,
+        });
+        success('Patient updated successfully!');
+      } else {
+        // Add new patient
+        await PatientService.addPatient({
+          FirstName: formData.firstName,
+          LastName: formData.lastName,
+          DOB: formData.dob,
+          Gender: formData.gender === 'Male' ? 'M' : 'F',
+          ContactNumber: formData.contactNumber,
+          Address: formData.address,
+          CNIC: formData.cnic,
+          isActive: true,
+        });
+        success('Patient added successfully!');
+        // Clear form for adding new entries
+        setFormData({
+          firstName: '',
+          lastName: '',
+          dob: '',
+          gender: '',
+          contactNumber: '',
+          address: '',
+          cnic: '',
+        });
+      }
     } catch (err: unknown) {
       if (err instanceof Error) {
         error(err.message);
       } else {
-        error('Failed to add patient. Please try again.');
+        error('Failed to submit patient data. Please try again.');
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  // Get today's date in YYYY-MM-DD format for the max attribute
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -77,7 +144,7 @@ export function PatientFormPage({ initialData }: PatientFormProps) {
 
       <div className="bg-white rounded-xl p-6">
         <h2 className="text-xl font-bold mb-6">
-          {initialData ? 'Update Patient' : 'Register New Patient'}
+          {patientId ? 'Update Patient' : 'Register New Patient'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -107,6 +174,7 @@ export function PatientFormPage({ initialData }: PatientFormProps) {
               type="date"
               required
               value={formData.dob}
+              max={today}
               onChange={(e) => handleInputChange('dob', e.target.value)}
             />
             <SelectInput
@@ -157,9 +225,10 @@ export function PatientFormPage({ initialData }: PatientFormProps) {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              disabled={isSubmitting}
+              className={`px-4 py-2 ${isSubmitting ? 'bg-gray-500' : 'bg-indigo-600'} text-white rounded-lg hover:${isSubmitting ? '' : 'bg-indigo-700'}`}
             >
-              {initialData ? 'Update Patient' : 'Register Patient'}
+              {isSubmitting ? (patientId ? 'Updating...' : 'Submitting...') : (patientId ? 'Update Patient' : 'Register Patient')}
             </button>
           </div>
         </form>
