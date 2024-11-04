@@ -82,6 +82,13 @@ export interface InventoryItem {
             throw new Error(errorData.message || 'Failed to delete inventory item');
         }
     }
+
+    // Fetch expired inventory items
+    async fetchExpiredInventoryItems(): Promise<InventoryItem[]> {
+        const response = await fetch(`${this.baseUrl}/expired`);
+        if (!response.ok) throw new Error('Failed to fetch expired inventory items');
+        return await response.json();
+      }
   }
   
   export default new InventoryService();
