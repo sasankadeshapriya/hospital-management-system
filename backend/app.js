@@ -20,6 +20,7 @@ const departmentRoute = require('./routes/departmentRoute')
 const doctorAvailabilityRoute = require('./routes/doctorAvailabilityRoute');
 const doctorAppointmentsRoute = require('./routes/doctorAppointmentsRoute');
 const userAccountRoute = require('./routes/userAccountRoute')
+const medicalHistoryRoute = require('./routes/medicalHistoryRoute')
 
 // Use Routes
 app.use('/api/v1/patients', patientsRoute);
@@ -29,6 +30,7 @@ app.use('/api/v1/departments', departmentRoute);
 app.use('/api/v1/doc-availability', doctorAvailabilityRoute);
 app.use('/api/v1/doc-appointments', doctorAppointmentsRoute);
 app.use('/api/v1/user', userAccountRoute);
+app.use('/api/v1/medical-history', medicalHistoryRoute);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
