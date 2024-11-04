@@ -11,6 +11,7 @@ app.use(express.json());
 
 const port = process.env.PORT || 5000;
 
+
 // Route imports
 const patientsRoute = require('./routes/patientsRoute');
 const inventoryRoute = require('./routes/inventoryRoute')
@@ -18,6 +19,7 @@ const labTestRoute = require('./routes/labTestsRoute')
 const departmentRoute = require('./routes/departmentRoute')
 const doctorAvailabilityRoute = require('./routes/doctorAvailabilityRoute');
 const doctorAppointmentsRoute = require('./routes/doctorAppointmentsRoute');
+const userAccountRoute = require('./routes/userAccountRoute')
 
 // Use Routes
 app.use('/api/v1/patients', patientsRoute);
@@ -26,5 +28,8 @@ app.use('/api/v1/labtests', labTestRoute);
 app.use('/api/v1/departments', departmentRoute);
 app.use('/api/v1/doc-availability', doctorAvailabilityRoute);
 app.use('/api/v1/doc-appointments', doctorAppointmentsRoute);
+app.use('/api/v1/user', userAccountRoute);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 module.exports = app;

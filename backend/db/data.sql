@@ -204,3 +204,4 @@ INSERT INTO Notifications (PatientID, Message, NotificationDate, IsRead) VALUES
     
 ALTER TABLE Departments ADD  FOREIGN KEY (HOD) REFERENCES Doctors(DoctorID);
 ALTER TABLE Doctors ADD  FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID);
+ALTER TABLE DoctorAvailability ADD COLUMN isActive BOOLEAN DEFAULT TRUE;

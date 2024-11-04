@@ -285,3 +285,12 @@ CREATE TABLE archiveDepartment (
     DeletedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- auditlog
+CREATE TABLE AuditLog (
+    LogID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID INT,
+    Action VARCHAR(50),
+    Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    OldValue JSON,
+    NewValue JSON
+);
