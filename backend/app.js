@@ -21,9 +21,10 @@ const labTestRoute = require('./routes/labTestsRoute')
 const departmentRoute = require('./routes/departmentRoute')
 const doctorAvailabilityRoute = require('./routes/doctorAvailabilityRoute');
 const doctorAppointmentsRoute = require('./routes/doctorAppointmentsRoute');
-const userAccountRoute = require('./routes/userAccountRoute')
-const medicalHistoryRoute = require('./routes/medicalHistoryRoute')
-const userAuthRoute = require('./routes/userAuthRoute')
+const userAccountRoute = require('./routes/userAccountRoute');
+const medicalHistoryRoute = require('./routes/medicalHistoryRoute');
+const userAuthRoute = require('./routes/userAuthRoute');
+const doctorRoute = require('./routes/doctorRoute');
 
 // Use Routes
 app.use('/api/v1/patients', patientsRoute);
@@ -34,6 +35,7 @@ app.use('/api/v1/doc-availability', doctorAvailabilityRoute);
 app.use('/api/v1/doc-appointments', doctorAppointmentsRoute);
 app.use('/api/v1/user', userAccountRoute);
 app.use('/api/v1/medical-history', medicalHistoryRoute);
+app.use('/api/v1/doctors', doctorRoute);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/v1', userAuthRoute);
 

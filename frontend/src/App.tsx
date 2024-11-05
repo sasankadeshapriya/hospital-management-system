@@ -14,6 +14,9 @@ import InventoryPage from './pages/inventory/InventoryPage';
 import { InventoryFormPage } from './pages/inventory/InventoryFormPage';
 import StaffPage from './pages/staff/StaffPage';
 import { StaffFormPage } from './pages/staff/StaffFormPage';
+import DepartmentsPage from './pages/department/DepartmentsPage';
+import LabTestsPage from './pages/lab/LabTestsPage';
+import LabTestFormPage from './pages/lab/LabTestFormPage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -52,6 +55,10 @@ function App() {
             <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/inventory/new" element={<InventoryFormPage />} />
             <Route path="/inventory/edit/:itemId" element={<InventoryFormPage />} />
+            <Route path="/departments" element={<DepartmentsPage />} />
+            <Route path="/labtests" element={<LabTestsPage />} />
+            <Route path="/labtests/new" element={<LabTestFormPage />} />
+            <Route path="/labtests/edit/:id" element={<LabTestFormPage />} />
             <Route path="*" element={<div>Page not found</div>} />
           </Routes>
         </div>
