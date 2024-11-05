@@ -5,7 +5,6 @@ INSERT INTO Patients (FirstName, LastName, DOB, Gender, ContactNumber, Address, 
     ('Diana', 'White', '1993-07-30', 'F', '0712345682', '101 White St, Colombo', '923456793V',true),
     ('Ethan', 'Blue', '1990-03-05', 'M', '0712345683', '202 Blue St, Colombo', '923456794V',true);
 
-
 INSERT INTO Departments (DepartmentName, HOD) VALUES
     ('Cardiology', 1),
     ('Neurology', 2),
@@ -36,7 +35,6 @@ INSERT INTO Doctors (DepartmentID, UserID, Specialization, Status, DOJ, isActive
     (5, 5, 'Orthopedic Surgeon', 'Active', '2014-05-25', true),
     (6, 6, 'Dermatologist', 'Active', '2016-08-18', true),
     (7, 7, 'Psychiatrist', 'Active', '2018-03-22', true);
-
 
 INSERT INTO DoctorAvailability (DoctorID, RoomNO, AvailableDay, StartTime, EndTime, isActive) VALUES
     (1, 101, 'monday', '09:00:00', '17:00:00', true),
@@ -128,8 +126,6 @@ INSERT INTO ConsultationQueue_details (D_AppointmentID, PatientID, QueueNumber, 
     (6, 1, 1, 6, 5, '2024-11-13', 1),
     (7, 2, 2, 6, 5, '2024-11-13', 1);
 
-
-
 -- Sample Data for LabQueue Table
 INSERT INTO LabQueue (QueueID, TestID, Date) VALUES
     (1, 1, '2024-10-28'),
@@ -152,7 +148,6 @@ INSERT INTO Refunds (BillingID, AppointmentType, D_AppointmentID, L_AppointmentI
     (2, 'Lab', NULL, 1, 500.00, NOW(), 'Pending', 'Test Not Required'),
     (3, 'Consultation', 2, NULL, 1500.00, NOW(), 'Pending', 'Patient No Show'),
     (4, 'Lab', NULL, 2, 2000.00, NOW(), 'Pending', 'Test Cancelled');
-
 
 -- Sample Data for Notifications Table
 INSERT INTO Notifications (PatientID, Message, NotificationDate, IsRead) VALUES

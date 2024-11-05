@@ -221,7 +221,6 @@ call insertDoctorAppointment(
 	'2024-12-27', '09:30:00', 'Pending', 3, 5, 'Consultation', 5
 );
 
-drop procedure insertDoctorAppointment;
 -- ================================================================================================================================================================================
 -- delete doctor appointment
 
