@@ -104,23 +104,6 @@ INSERT INTO Inventory (MedicineName, Quantity, ExpiryDate, Cost) VALUES
     ('Methotrexate', 50, '2026-01-20', 2.00),
     ('Levothyroxine', 300, '2024-11-30', 0.40);
 
--- Sample Data for Prescriptions Table
-INSERT INTO Prescriptions (PatientID, DoctorID, Date) VALUES
-    (1, 1, '2024-10-28'),
-    (2, 2, '2024-10-29'),
-    (3, 3, '2024-10-29'),
-    (4, 4, '2024-11-03'),
-    (5, 5, '2024-11-07');
-
--- Sample Data for PrescriptionDetails Table
-INSERT INTO PrescriptionDetails (PrescriptionID, MedicineName, Dosage_days,Dosage_per_day, Instructions) VALUES
-    (1, 'Metformin', 4, 2, 'With food'),
-    (2, 'Lisinopril', 5, 3, 'With water'),
-    (3, 'Albuterol', 14, 1, 'Before meals'),
-    (4, 'Methotrexate', 3, 3, 'With food'),
-    (5, 'Levothyroxine', 5, 1, 'With water');
-
-select * from PrescriptionDetails;
 -- Sample Data for Billing Table
 INSERT INTO Billing (AppointmentType, PatientID, Amount, PaymentMethod, Date, Type, IsRefunded, D_AppointmentID, L_AppointmentID) VALUES
     ('Consultation', 1, 1000.00, 'Cash', '2024-10-28', 'Consultation', FALSE, 1, NULL),
