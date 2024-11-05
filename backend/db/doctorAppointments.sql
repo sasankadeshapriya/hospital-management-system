@@ -167,9 +167,6 @@ SELECT insertDoctorAppointment(
 	'2024-11-13', '09:30:00', 'Pending', 3, 5, 'Consultation', 8
 );
 
-drop function insertDoctorAppointment;
-
-
 -- ================================================================================================================================================================================
 -- delete doctor appointment
 
