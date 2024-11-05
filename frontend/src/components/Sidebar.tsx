@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Users, UserRound, Calendar, Users2, LogOut, ChevronRight, Pill } from 'lucide-react';
+import { Home, Users, UserRound, Calendar, Users2, LogOut, ChevronRight, Pill, Briefcase, FlaskConical } from 'lucide-react';
 import logofull from '../assets/images/logo-light.svg';
 import logohalf from '../assets/images/logo-head-light.svg';
 import '../style/Sidebar.css';
@@ -25,6 +25,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
     { icon: Calendar, label: 'Appointments', value: '/appointments' },
     { icon: Users2, label: 'Staff', value: '/staff' },
     { icon: Pill, label: 'Inventory', value: '/inventory' },
+    { icon: Briefcase, label: 'Departments', value: '/departments' },
+    { icon: FlaskConical, label: 'Lab', value: '/labtests' },
   ];
 
   const handleResize = () => {
