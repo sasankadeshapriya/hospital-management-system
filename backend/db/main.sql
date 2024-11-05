@@ -15,8 +15,6 @@ CREATE TABLE Patients (
     isActive boolean not null
 );
 
-create unique index idx_cnic on Patients(CNIC);
-
 -- 2. Departments Table
 CREATE TABLE Departments (
     DepartmentID INT PRIMARY KEY AUTO_INCREMENT,
