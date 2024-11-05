@@ -143,7 +143,7 @@ const PatientList: React.FC<PatientListProps> = ({ searchQuery }) => {
           {
             header: 'Actions',
             accessor: (patient) => (
-              <div className="flex gap-2">
+              <div className="flex gap-2 justify-center">
                 <button
                   onClick={() => handleUpdatePatient(patient.PatientID)}
                   className="px-4 py-2 text-sm text-green-600 rounded-lg hover:bg-green-50 transition-colors"

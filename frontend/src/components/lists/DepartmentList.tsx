@@ -94,7 +94,7 @@ const DepartmentList: React.FC<DepartmentListProps> = ({ searchQuery }) => {
           {
             header: 'Actions',
             accessor: (department) => (
-              <div className="flex gap-2">
+              <div className="flex gap-2 justify-center">
                 <button
                   onClick={() => handleUpdateDepartment(department.DepartmentID)}
                   className="px-4 py-2 text-sm text-green-600 rounded-lg hover:bg-green-50 transition-colors"

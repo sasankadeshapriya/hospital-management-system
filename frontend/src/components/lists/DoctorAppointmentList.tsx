@@ -119,7 +119,7 @@ const DoctorAppointmentList: React.FC<DoctorAppointmentListProps> = ({ searchQue
           {
             header: 'Actions',
             accessor: (appointment) => (
-              <div className="flex gap-2">
+              <div className="flex gap-2 jsutify-center">
                 <button
                   onClick={() => handleDeleteClick(appointment.D_AppointmentID)}
                   className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
