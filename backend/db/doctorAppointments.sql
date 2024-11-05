@@ -138,7 +138,7 @@ deterministic
 		INSERT INTO Doctor_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, DoctorID, AppointmentType, isActive)
         values (AppointmentDate_, AppointmentTime_, Status_, PatientID_, DoctorID_, AppointmentType_, 1);
         
-        SELECT QueueID INTO queue_id FROM ConsultationQueue WHERE DoctorID = DoctorID_ AND Date = AppointmentDate_;
+        SELECT QueueID INTO queue_id FROM ConsultationQueue WHERE DoctorID = DoctorID_ AND Date = AppointmentDate_ AND AvailabilityID = AvailabilityID_;
         SELECT D_AppointmentID INTO appointment_id FROM Doctor_Appointments WHERE DoctorID = DoctorID_ AND AppointmentDate = AppointmentDate_ and PatientID = PatientID_;
         
 			IF queue_id IS NULL THEN
@@ -163,9 +163,11 @@ deterministic
 	END $$
 DELIMITER ;
 
--- SELECT insertDoctorAppointment(
--- 	'2024-11-13', '09:30:00', 'Pending', 2, 5, 'Consultation', 5
--- );
+SELECT insertDoctorAppointment(
+	'2024-11-13', '09:30:00', 'Pending', 3, 5, 'Consultation', 8
+);
+
+drop function insertDoctorAppointment;
 
 
 -- ================================================================================================================================================================================
