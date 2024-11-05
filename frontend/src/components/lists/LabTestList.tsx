@@ -81,7 +81,7 @@ const LabTestList: React.FC<LabTestListProps> = ({ searchQuery }) => {
           {
             header: 'Actions',
             accessor: (test) => (
-              <div className="flex gap-2">
+              <div className="flex gap-2 justify-center">
                 <button
                   onClick={() => handleUpdateTest(test.TestID)}
                   className="px-4 py-2 text-sm text-green-600 rounded-lg hover:bg-green-50 transition-colors"
