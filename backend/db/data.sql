@@ -105,41 +105,19 @@ INSERT INTO Inventory (MedicineName, Quantity, ExpiryDate, Cost) VALUES
     ('Levothyroxine', 300, '2024-11-30', 0.40);
 
 -- Sample Data for Billing Table
-INSERT INTO Billing (AppointmentType, PatientID, Amount, PaymentMethod, Date, Type, IsRefunded, D_AppointmentID, L_AppointmentID) VALUES
-    ('Consultation', 1, 1000.00, 'Cash', '2024-10-28', 'Consultation', FALSE, 1, NULL),
-    ('Lab', 2, 500.00, 'Credit Card', '2024-10-29', 'Lab Test', FALSE, NULL, 1),
-    ('Consultation', 3, 1500.00, 'Cash', '2024-10-29', 'Consultation', FALSE, 2, NULL),
-    ('Lab', 4, 2000.00, 'Credit Card', '2024-11-03', 'Lab Test', FALSE, NULL, 2),
-    ('Consultation', 5, 2500.00, 'Cash', '2024-11-07', 'Consultation', FALSE, 3, NULL);
-
-INSERT INTO Accounts (AccountType) VALUES
-    ('Doctor'),
-    ('Pharmacist'),
-    ('Receptionist'),
-     ('Lab Assistant'),
-    ('Administrator');
-    
-INSERT INTO Doctor_Acc (Doc_AccID, DoctorID, AccountName, Balance, AccountID) VALUES
-    (1, 1, 'Dr. Alice Thompson', 5000.00, 1),
-    (2, 2, 'Dr. Robert Williams', 6000.00, 1),
-    (3, 3, 'Dr. Susan Taylor', 7000.00, 1),
-    (4, 4, 'Dr. John Brown', 8000.00, 1),
-    (5, 5, 'Dr. Emma White', 9000.00, 1);
-
--- Sample Data for HospitalAndPhamacy_Acc Table
-INSERT INTO HospitalAndPhamacy_Acc (HnP_AccID, AccountName, AccountType, Balance, AccountID) VALUES
-    (1, 'Main Pharmacy', 'Pharmacy', 15000.00, 2),
-    (2, 'Lab Services', 'Lab', 12000.00, 2),
-    (3, 'Reception', 'Reception', 8000.00, 2);
-
--- Sample Data for AccountTransactions Table
-INSERT INTO AccountTransactions (BillingID, AccountID, Amount, TransactionDate, AccountType, Description) VALUES
-    (1, 1, 1000.00, NOW(), 'Doctor', 'Consultation fee for Patient 1'),
-    (2, 2, 500.00, NOW(), 'Pharmacy', 'Lab test fee for Patient 2'),
-    (3, 3, 1500.00, NOW(), 'Doctor', 'Consultation fee for Patient 3'),
-    (4, 4, 2000.00, NOW(), 'Lab', 'Lab test fee for Patient 4'),
-    (5, 5, 2500.00, NOW(), 'Doctor', 'Consultation fee for Patient 5');
-
+INSERT INTO Billing (AppointmentType, PatientID, Amount, PaymentMethod, Date, IsRefunded, D_AppointmentID, L_AppointmentID) VALUES
+    ('Consultation', 1, 1000.00, 'Cash', '2024-10-28', FALSE, 1, NULL),
+    ('Lab', 2, 500.00, 'Credit Card', '2024-10-29', FALSE, NULL, 1),
+    ('Consultation', 3, 1500.00, 'Cash', '2024-10-29', FALSE, 2, NULL),
+    ('Lab', 4, 2000.00, 'Credit Card', '2024-11-03', FALSE, NULL, 2),
+    ('Consultation', 5, 2500.00, 'Cash', '2024-11-07', FALSE, 3, NULL);
+  
+INSERT INTO Doctor_Acc (DoctorID, AccountName, Balance, AccountID) VALUES
+    (1, 'Dr. Alice Thompson', 0.00, 1),
+    (2, 'Dr. Robert Williams', 0.00, 1),
+    (3, 'Dr. Susan Taylor', 0.00, 1),
+    (4, 'Dr. John Brown', 0.00, 1),
+    (5, 'Dr. Emma White', 0.00, 1);
     
 INSERT INTO ConsultationQueue_details (D_AppointmentID, PatientID, QueueNumber, QueueID, DoctorID, Date, isActive) VALUES
     (1, 1, 1, 1, 1, '2024-10-28', 1),

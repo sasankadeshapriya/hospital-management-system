@@ -118,7 +118,7 @@ const insertDoctorAppointment = async (req, res) => {
             if (checkResult.length > 0) {
                 return res.status(409).json({ message: "A patient with this appointment is already registered." });
             } else {
-                const sql = "SELECT insertDoctorAppointment(?,?,?,?,?,?,?)";
+                const sql = "call insertDoctorAppointment(?,?,?,?,?,?,?)";
 
                 const values = [
                     AppointmentDate,
