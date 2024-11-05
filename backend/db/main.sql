@@ -94,6 +94,10 @@ CREATE TABLE Doctor_Appointments (
    --  FOREIGN KEY (QueueID) REFERENCES ConsultationQueue(QueueID) -- Link to ConsultationQueue
 );
 
+create table doc_appointment_cost(
+	cost DECIMAL(10, 2)
+);
+
 CREATE TABLE Lab_Appointments (
     L_AppointmentID INT PRIMARY KEY auto_increment, -- Unique identifier for each appointment
     AppointmentDate DATE NOT NULL,               -- Appointment date
@@ -144,7 +148,6 @@ CREATE TABLE Billing (
     Amount DECIMAL(10, 2) NOT NULL,                -- Amount charged
     PaymentMethod VARCHAR(50) NOT NULL,            -- Payment method (Cash, Credit Card, etc.)
     Date DATE NOT NULL,                            -- Billing date
-    Type VARCHAR(50) NOT NULL,                     -- Billing type (Consultation, Lab Test, Pharmacy)
     IsRefunded BOOLEAN NOT NULL DEFAULT FALSE,     -- Flag to indicate if the billing record is a refund
     D_AppointmentID INT,
     L_AppointmentID INT,
@@ -160,7 +163,7 @@ CREATE TABLE Accounts (
 );
 
 CREATE TABLE Doctor_Acc (
-	Doc_AccID INT PRIMARY KEY,
+	Doc_AccID INT PRIMARY KEY auto_increment,
     DoctorID INT,       -- Unique identifier for each account
     AccountName VARCHAR(100) NOT NULL,             -- Name associated with the account
     Balance DECIMAL(10, 2) NOT NULL,
@@ -185,6 +188,9 @@ CREATE TABLE AccountTransactions (
     AccountID INT NOT NULL,                        -- Foreign key to Accounts table
     Amount DECIMAL(10, 2) NOT NULL,                -- Amount involved in the transaction (positive or negative)
     TransactionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Date and time of the transaction
+    DoctorID INT,
+    Doc_AccID INT,
+    HnP_AccID INT,
     AccountType VARCHAR(50) NOT NULL,
     Description VARCHAR(255) NOT NULL,
     FOREIGN KEY (AccountID) REFERENCES Accounts(AccountID),
@@ -269,3 +275,17 @@ CREATE TABLE AuditLog (
     OldValue JSON,
     NewValue JSON
 );
+
+-- account tables - static
+INSERT INTO doc_appointment_cost
+VALUES (4000.00);
+
+INSERT INTO Accounts (AccountType) VALUES
+    ('Doctor'),
+    ('Hospital'),
+    ('Pharmacy');
+
+INSERT INTO HospitalAndPhamacy_Acc (HnP_AccID, AccountName, AccountType, Balance, AccountID) VALUES
+	(1, 'Hospital Acc', 'Hospital', 0.00, 2),
+    (2, 'Pharmacy Acc', 'Pharmacy', 0.00, 3);
+    

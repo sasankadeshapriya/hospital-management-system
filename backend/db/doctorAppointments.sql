@@ -119,7 +119,7 @@ call getDoctorAppointmentByQueueId(6);
 -- insert doctor appointments
 
 DELIMITER $$
-CREATE function insertDoctorAppointment(
+CREATE procedure insertDoctorAppointment(
 		AppointmentDate_ DATE,
 		AppointmentTime_ TIME,
 		Status_ VARCHAR(50),
@@ -128,18 +128,29 @@ CREATE function insertDoctorAppointment(
 		AppointmentType_ VARCHAR(20),
         AvailabilityID_ int
 	)
-returns boolean
-deterministic
 	BEGIN
 		DECLARE queue_id int;
+        DECLARE billing_id int;
+        DECLARE doc_bank_acc_id int;
         DECLARE appointment_id int;
+        DECLARE appointment_cost DECIMAL(10, 2);
         DECLARE last_queue_number INT DEFAULT 0;
+        
+        DECLARE EXIT HANDLER FOR SQLEXCEPTION
+		BEGIN
+			ROLLBACK; -- Rollback on error
+		END;
+
+		-- Start transaction
+		START TRANSACTION;
         
 		INSERT INTO Doctor_Appointments (AppointmentDate, AppointmentTime, Status, PatientID, DoctorID, AppointmentType, isActive)
         values (AppointmentDate_, AppointmentTime_, Status_, PatientID_, DoctorID_, AppointmentType_, 1);
         
         SELECT QueueID INTO queue_id FROM ConsultationQueue WHERE DoctorID = DoctorID_ AND Date = AppointmentDate_ AND AvailabilityID = AvailabilityID_;
         SELECT D_AppointmentID INTO appointment_id FROM Doctor_Appointments WHERE DoctorID = DoctorID_ AND AppointmentDate = AppointmentDate_ and PatientID = PatientID_;
+        SELECT cost INTO appointment_cost FROM doc_appointment_cost LIMIT 1; -- there is only one raw
+        SELECT Doc_AccID INTO doc_bank_acc_id FROM Doctor_Acc WHERE DoctorID = DoctorID_;
         
 			IF queue_id IS NULL THEN
 				INSERT INTO ConsultationQueue(DoctorID, Date, AvailabilityID, AppointmentDateTime)
@@ -149,6 +160,28 @@ deterministic
 				
 				INSERT INTO ConsultationQueue_details(D_AppointmentID, PatientID, QueueNumber, QueueID, DoctorID, Date, isActive)
 				VALUES (appointment_id, PatientID_, 1, queue_id, DoctorID_, AppointmentDate_,1);
+                
+                -- deposite to doc acc
+                UPDATE Doctor_Acc
+					SET Balance = Balance + (appointment_cost/2)
+				WHERE DoctorID = DoctorID_;
+                
+                -- deposite to hnp acc
+                UPDATE HospitalAndPhamacy_Acc
+					SET Balance = Balance + (appointment_cost/2)
+				WHERE AccountType = 'Hospital';
+                
+                -- create bill
+                INSERT INTO Billing (AppointmentType, PatientID, Amount, PaymentMethod, Date, IsRefunded, D_AppointmentID, L_AppointmentID)
+                VALUES ('Consultation', PatientID_, appointment_cost, "Cash", AppointmentDate_, 0, appointment_id, null);
+                
+                SET billing_id = LAST_INSERT_ID();
+                
+                -- update AccountTransactions table
+                INSERT INTO AccountTransactions(BillingID, AccountID, Amount, TransactionDate,DoctorID, Doc_AccID, HnP_AccID, AccountType, Description)
+                VALUES
+					(billing_id, 1, appointment_cost/2, NOW(),DoctorID_, doc_bank_acc_id, null, 'Doctor', 'Doctor fees'),
+                    (billing_id, 2, appointment_cost/2, NOW(),null, null, 1, 'Hospital', 'Hospital fees');
 			ELSE
 			
 				SELECT IFNULL(MAX(QueueNumber), 0) + 1 INTO last_queue_number 
@@ -157,16 +190,38 @@ deterministic
 				
 				INSERT INTO ConsultationQueue_details(D_AppointmentID, PatientID, QueueNumber, QueueID, DoctorID, Date, isActive)
 				VALUES (appointment_id, PatientID_, last_queue_number, queue_id, DoctorID_, AppointmentDate_,1);
+                
+                -- deposite to doc acc
+                UPDATE Doctor_Acc
+					SET Balance = Balance + (appointment_cost/2)
+				WHERE DoctorID = DoctorID_;
+                
+                -- deposite to hnp acc
+                UPDATE HospitalAndPhamacy_Acc
+					SET Balance = Balance + (appointment_cost/2)
+				WHERE AccountType = 'Hospital';
+                
+                -- create bill
+                INSERT INTO Billing (AppointmentType, PatientID, Amount, PaymentMethod, Date, IsRefunded, D_AppointmentID, L_AppointmentID)
+                VALUES ('Consultation', PatientID_, appointment_cost, "Cash", AppointmentDate_, 0, appointment_id, null);
+                
+                SET billing_id = LAST_INSERT_ID();
+                
+                -- update AccountTransactions table
+                INSERT INTO AccountTransactions(BillingID, AccountID, Amount, TransactionDate,DoctorID, Doc_AccID, HnP_AccID, AccountType, Description)
+                VALUES
+					(billing_id, 1, appointment_cost/2, NOW(),DoctorID_, doc_bank_acc_id, null, 'Doctor', 'Doctor fees'),
+                    (billing_id, 2, appointment_cost/2, NOW(),null, null, 1, 'Hospital', 'Hospital fees');
 			END IF;
-            
-		return true;
+		COMMIT;
 	END $$
 DELIMITER ;
 
-SELECT insertDoctorAppointment(
-	'2024-11-13', '09:30:00', 'Pending', 3, 5, 'Consultation', 8
+call insertDoctorAppointment(
+	'2024-12-27', '09:30:00', 'Pending', 3, 5, 'Consultation', 5
 );
 
+drop procedure insertDoctorAppointment;
 -- ================================================================================================================================================================================
 -- delete doctor appointment
 
