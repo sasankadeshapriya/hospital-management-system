@@ -19,7 +19,6 @@ interface Patient {
   isActive: number | boolean;
 }
 
-
 const PatientDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // Get patient ID from URL
   const navigate = useNavigate();
@@ -52,7 +51,6 @@ const PatientDetailsPage: React.FC = () => {
           setMedicalHistory(medicalHistoryData);
         } catch (err) {
           console.error('Error loading medical history:', err);
-          // No toast notification if data is missing
         }
       }
     };
@@ -67,7 +65,6 @@ const PatientDetailsPage: React.FC = () => {
           setAppointment(appointmentData);
         } catch (err) {
           console.error('Error loading appointment:', err);
-          // No toast notification if data is missing
         }
       }
     };
@@ -113,13 +110,15 @@ const PatientDetailsPage: React.FC = () => {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl p-6 shadow-sm">
               <div className="flex items-center gap-4 mb-6">
-                <img
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  alt={`${patient.FirstName} ${patient.LastName}`}
-                  className="h-20 w-20 rounded-full"
-                />
+                {/* Circle with initials */}
+                <div className="h-20 w-20 bg-indigo-600 text-white flex items-center justify-center rounded-full text-xl font-semibold">
+                  {patient.FirstName[0]}
+                  {patient.LastName[0]}
+                </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900">{patient.FirstName} {patient.LastName}</h2>
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    {patient.FirstName} {patient.LastName}
+                  </h2>
                   <p className="text-gray-500">Patient ID: #{patient.PatientID}</p>
                 </div>
               </div>
@@ -151,7 +150,7 @@ const PatientDetailsPage: React.FC = () => {
 
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Medical Information</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Information</h3>
               <div className="space-y-4">
                 {appointment ? (
                   [
@@ -197,14 +196,13 @@ const PatientDetailsPage: React.FC = () => {
             {/* Conditional Button Rendering */}
             <div className="mt-6 flex justify-end gap-4">
               <button
-                onClick={() => console.log(medicalHistory ? 'Update Medical History' : 'Add Medical History')}
-                className={`px-4 py-2 ${medicalHistory ? 'text-yellow-600 bg-yellow-50 hover:bg-yellow-100 focus:ring-yellow-500' : 'bg-blue-50 text-blue-600 hover:bg-blue-100 focus:ring-blue-500'} text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50`}
+                onClick={() => navigate(medicalHistory ? `/medical-history/edit/${id}` : `/medical-history/add/${id}`)}
+                className={`px-4 py-2 ${medicalHistory ? 'bg-yellow-50 text-yellow-700 hover:bg-yellow-100 focus:ring-yellow-500' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 focus:ring-blue-500'} rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50`}
               >
                 {medicalHistory ? 'Update' : 'Add'}
               </button>
             </div>
           </div>
-
 
             {appointment && (
               <div className="mt-6">

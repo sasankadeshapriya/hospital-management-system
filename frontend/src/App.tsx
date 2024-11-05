@@ -17,6 +17,7 @@ import { StaffFormPage } from './pages/staff/StaffFormPage';
 import DepartmentsPage from './pages/department/DepartmentsPage';
 import LabTestsPage from './pages/lab/LabTestsPage';
 import LabTestFormPage from './pages/lab/LabTestFormPage';
+import MedicalHistoryFormPage from './pages/medical-history/MedicalHistoryFormPage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -59,6 +60,8 @@ function App() {
             <Route path="/labtests" element={<LabTestsPage />} />
             <Route path="/labtests/new" element={<LabTestFormPage />} />
             <Route path="/labtests/edit/:id" element={<LabTestFormPage />} />
+            <Route path="/medical-history/add/:id" element={<MedicalHistoryFormPage />} />
+            <Route path="/medical-history/edit/:id" element={<MedicalHistoryFormPage />} />
             <Route path="*" element={<div>Page not found</div>} />
           </Routes>
         </div>
