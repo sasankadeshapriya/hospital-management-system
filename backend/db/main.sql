@@ -121,15 +121,6 @@ CREATE TABLE MedicalHistory (
     FOREIGN KEY (PatientID) REFERENCES Patients(PatientID)
 );
 
--- 7. Prescriptions Table
-CREATE TABLE Prescriptions (
-    PrescriptionID INT PRIMARY KEY auto_increment,  -- Unique identifier for each prescription
-    PatientID INT NOT NULL,                         -- Foreign key to the Patients table
-    DoctorID INT NOT NULL,                          -- Foreign key to the Doctors table
-    Date DATE NOT NULL,                             -- Date of prescription
-    FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
-    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID)
-);
 
 -- 10. Inventory Table
 CREATE TABLE Inventory (
@@ -144,18 +135,6 @@ CREATE TABLE InventoryArchive LIKE Inventory;
 ALTER TABLE InventoryArchive 
 ADD COLUMN deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-
-
--- 8. PrescriptionDetails Table
-CREATE TABLE PrescriptionDetails (
-    DetailID INT PRIMARY KEY auto_increment,       -- Unique identifier for each prescription detail
-    PrescriptionID INT NOT NULL,                   -- Foreign key to the Prescriptions table
-    MedicineName VARCHAR(100) NOT NULL,           -- Name of the prescribed medicine
-    Dosage_days int NOT NULL,                   -- Dosage instructions
-    Dosage_per_day int NOT NULL,                   -- Dosage instructions
-    Instructions TEXT,
-    FOREIGN KEY (PrescriptionID) REFERENCES Prescriptions(PrescriptionID)
-);
 
 -- 9. Billing Table
 CREATE TABLE Billing (
