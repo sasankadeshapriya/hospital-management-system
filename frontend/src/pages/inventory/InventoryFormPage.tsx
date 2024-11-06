@@ -1,38 +1,106 @@
-import React from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { TextInput, SelectInput } from '../../components/FormComponents';
-
-interface Medicine {
-  name: string;
-  quantity: number;
-  expiryDate: string;
-  cost: number;
-  status: string;
-}
+import { useNavigate, useParams } from 'react-router-dom';
+import { TextInput } from '../../components/FormComponents';
+import InventoryService from '../../services/InventoryService';
+import { ToastContext } from '../../context/ToastContext';
 
 interface InventoryFormProps {
-  initialData?: Medicine;
+  initialData?: {
+    name: string;
+    quantity: number;
+    expiryDate: string;
+    cost: number;
+  };
 }
 
 export function InventoryFormPage({ initialData }: InventoryFormProps) {
   const navigate = useNavigate();
-  const [formData, setFormData] = React.useState({
+  const { itemId } = useParams<{ itemId: string }>(); // Get itemId from route
+  const { success, error } = useContext(ToastContext);
+  const [formData, setFormData] = useState({
     name: initialData?.name || '',
     quantity: initialData?.quantity || '',
     expiryDate: initialData?.expiryDate || '',
     cost: initialData?.cost || '',
-    status: initialData?.status || '',
   });
+  const [initialFormData, setInitialFormData] = useState(formData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const loadInventoryData = async () => {
+      if (itemId) {
+        try {
+          const item = await InventoryService.fetchInventoryItemById(Number(itemId));
+          if (item) {
+            const newFormData = {
+              name: item.MedicineName,
+              quantity: String(item.Quantity), // Convert to string
+              expiryDate: new Date(item.ExpiryDate).toISOString().split('T')[0],
+              cost: String(item.Cost), // Convert to string
+            };
+            setFormData(newFormData);
+            setInitialFormData(newFormData); // Set initial data for change detection
+          }
+        } catch (err) {
+          error('Failed to load inventory item details.');
+          console.error(err);
+        }
+      }
+    };
+    loadInventoryData();
+  }, [itemId, error]);
 
   const handleInputChange = (field: keyof typeof formData, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
-    navigate('/inventory'); // Redirect to inventory page after submission
+
+    // Prevent submission if data hasn't changed
+    if (JSON.stringify(formData) === JSON.stringify(initialFormData)) {
+      error('No changes detected');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      if (itemId) {
+        // Update existing item
+        await InventoryService.updateInventoryItem(Number(itemId), {
+          MedicineName: formData.name,
+          Quantity: Number(formData.quantity),
+          ExpiryDate: formData.expiryDate,
+          Cost: parseFloat(formData.cost as string),
+        });
+        success('Medicine updated successfully!');
+      } else {
+        // Add new item
+        await InventoryService.addInventoryItem({
+          MedicineName: formData.name,
+          Quantity: Number(formData.quantity),
+          ExpiryDate: formData.expiryDate,
+          Cost: parseFloat(formData.cost as string),
+        });
+        success('Medicine added successfully!');
+        setFormData({
+          name: '',
+          quantity: '',
+          expiryDate: '',
+          cost: '',
+        });
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        error(err.message);
+      } else {
+        error('Failed to submit medicine data. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -47,7 +115,7 @@ export function InventoryFormPage({ initialData }: InventoryFormProps) {
 
       <div className="bg-white rounded-xl p-6">
         <h2 className="text-xl font-bold mb-6">
-          {initialData ? 'Update Medicine' : 'Add New Medicine'}
+          {itemId ? 'Update Medicine' : 'Add New Medicine'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -65,7 +133,7 @@ export function InventoryFormPage({ initialData }: InventoryFormProps) {
             id="quantity"
             type="number"
             required
-            value={String(formData.quantity)}
+            value={String(formData.quantity)} // Convert to string for input field
             onChange={(e) => handleInputChange('quantity', Number(e.target.value))}
             placeholder="Enter quantity"
           />
@@ -80,23 +148,14 @@ export function InventoryFormPage({ initialData }: InventoryFormProps) {
           />
 
           <TextInput
-            label="Cost ($)"
+            label="Cost (LKR)"
             id="cost"
             type="number"
             step="0.01"
             required
-            value={String(formData.cost)}
+            value={String(formData.cost)} // Convert to string for input field
             onChange={(e) => handleInputChange('cost', parseFloat(e.target.value))}
             placeholder="Enter cost"
-          />
-
-          <SelectInput
-            label="Stock Status"
-            id="status"
-            required
-            value={formData.status}
-            options={['In Stock', 'Low Stock', 'Out of Stock']}
-            onChange={(e) => handleInputChange('status', e.target.value)}
           />
 
           <div className="flex justify-end gap-4">
@@ -109,9 +168,10 @@ export function InventoryFormPage({ initialData }: InventoryFormProps) {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              disabled={isSubmitting}
+              className={`px-4 py-2 ${isSubmitting ? 'bg-gray-500' : 'bg-indigo-600'} text-white rounded-lg hover:${isSubmitting ? '' : 'bg-indigo-700'}`}
             >
-              {initialData ? 'Update Medicine' : 'Add Medicine'}
+              {isSubmitting ? (itemId ? 'Updating...' : 'Submitting...') : (itemId ? 'Update Medicine' : 'Add Medicine')}
             </button>
           </div>
         </form>
@@ -119,3 +179,5 @@ export function InventoryFormPage({ initialData }: InventoryFormProps) {
     </div>
   );
 }
+
+export default InventoryFormPage;

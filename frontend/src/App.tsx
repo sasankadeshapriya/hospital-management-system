@@ -7,13 +7,17 @@ import DoctorDetails from './pages/doctor/DoctorDetailsPage';
 import LoginPage from './pages/auth/LoginPage';
 import PatientsPage from './pages/patient/PatientsPage';
 import PatientDetails from './pages/patient/PatientDetailsPage';
-import {PatientFormPage} from './pages/patient/PatientFormPage';
-import {DoctorFormPage} from './pages/doctor/DoctorFormPage';
+import { PatientFormPage } from './pages/patient/PatientFormPage';
+import { DoctorFormPage } from './pages/doctor/DoctorFormPage';
 import DoctorAppointmentsPage from './pages/appointment/DoctorAppointmentsPage';
 import InventoryPage from './pages/inventory/InventoryPage';
-import {InventoryFormPage} from './pages/inventory/InventoryFormPage';
+import { InventoryFormPage } from './pages/inventory/InventoryFormPage';
 import StaffPage from './pages/staff/StaffPage';
-import {StaffFormPage} from './pages/staff/StaffFormPage';
+import { StaffFormPage } from './pages/staff/StaffFormPage';
+import DepartmentsPage from './pages/department/DepartmentsPage';
+import LabTestsPage from './pages/lab/LabTestsPage';
+import LabTestFormPage from './pages/lab/LabTestFormPage';
+import MedicalHistoryFormPage from './pages/medical-history/MedicalHistoryFormPage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -52,6 +56,12 @@ function App() {
             <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/inventory/new" element={<InventoryFormPage />} />
             <Route path="/inventory/edit/:itemId" element={<InventoryFormPage />} />
+            <Route path="/departments" element={<DepartmentsPage />} />
+            <Route path="/labtests" element={<LabTestsPage />} />
+            <Route path="/labtests/new" element={<LabTestFormPage />} />
+            <Route path="/labtests/edit/:id" element={<LabTestFormPage />} />
+            <Route path="/medical-history/add/:id" element={<MedicalHistoryFormPage />} />
+            <Route path="/medical-history/edit/:id" element={<MedicalHistoryFormPage />} />
             <Route path="*" element={<div>Page not found</div>} />
           </Routes>
         </div>

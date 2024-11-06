@@ -1,6 +1,6 @@
+drop database hms;
 CREATE DATABASE HMS;
 USE HMS;
-
 
 -- 1. Patients Table
 CREATE TABLE Patients (
@@ -14,8 +14,6 @@ CREATE TABLE Patients (
     CNIC VARCHAR(20) NOT NULL,           -- Unique CNIC number
     isActive boolean not null
 );
-
-create unique index idx_cnic on Patients(CNIC);
 
 -- 2. Departments Table
 CREATE TABLE Departments (
@@ -89,14 +87,15 @@ CREATE TABLE Doctor_Appointments (
     Status VARCHAR(50) NOT NULL,                    -- Status (Pending, Confirmed, Completed)
     PatientID INT NOT NULL,                         -- Foreign key to the Patients table
     DoctorID INT,                                   -- Foreign key to the Doctors table
-    -- RoomNumber VARCHAR(50) NOT NULL,                -- Room number for the appointment
-    -- QueueNumber INT NOT NULL,                       -- Queue number for the patient
     AppointmentType ENUM('Consultation', 'Lab'),           -- Type of appointment (Consultation or Lab Test)
-    -- QueueID INT NOT NULL,                       -- Foreign key to the ConsultationQueue table
     isActive boolean not null,
     FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
     FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID)
    --  FOREIGN KEY (QueueID) REFERENCES ConsultationQueue(QueueID) -- Link to ConsultationQueue
+);
+
+create table doc_appointment_cost(
+	cost DECIMAL(10, 2)
 );
 
 CREATE TABLE Lab_Appointments (
@@ -126,15 +125,6 @@ CREATE TABLE MedicalHistory (
     FOREIGN KEY (PatientID) REFERENCES Patients(PatientID)
 );
 
--- 7. Prescriptions Table
-CREATE TABLE Prescriptions (
-    PrescriptionID INT PRIMARY KEY auto_increment,  -- Unique identifier for each prescription
-    PatientID INT NOT NULL,                         -- Foreign key to the Patients table
-    DoctorID INT NOT NULL,                          -- Foreign key to the Doctors table
-    Date DATE NOT NULL,                             -- Date of prescription
-    FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
-    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID)
-);
 
 -- 10. Inventory Table
 CREATE TABLE Inventory (
@@ -150,18 +140,6 @@ ALTER TABLE InventoryArchive
 ADD COLUMN deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 
-
--- 8. PrescriptionDetails Table
-CREATE TABLE PrescriptionDetails (
-    DetailID INT PRIMARY KEY auto_increment,       -- Unique identifier for each prescription detail
-    PrescriptionID INT NOT NULL,                   -- Foreign key to the Prescriptions table
-    MedicineName VARCHAR(100) NOT NULL,           -- Name of the prescribed medicine
-    Dosage_days int NOT NULL,                   -- Dosage instructions
-    Dosage_per_day int NOT NULL,                   -- Dosage instructions
-    Instructions TEXT,
-    FOREIGN KEY (PrescriptionID) REFERENCES Prescriptions(PrescriptionID)
-);
-
 -- 9. Billing Table
 CREATE TABLE Billing (
     BillingID INT PRIMARY KEY AUTO_INCREMENT,      -- Unique identifier for each billing record
@@ -170,7 +148,6 @@ CREATE TABLE Billing (
     Amount DECIMAL(10, 2) NOT NULL,                -- Amount charged
     PaymentMethod VARCHAR(50) NOT NULL,            -- Payment method (Cash, Credit Card, etc.)
     Date DATE NOT NULL,                            -- Billing date
-    Type VARCHAR(50) NOT NULL,                     -- Billing type (Consultation, Lab Test, Pharmacy)
     IsRefunded BOOLEAN NOT NULL DEFAULT FALSE,     -- Flag to indicate if the billing record is a refund
     D_AppointmentID INT,
     L_AppointmentID INT,
@@ -186,7 +163,7 @@ CREATE TABLE Accounts (
 );
 
 CREATE TABLE Doctor_Acc (
-	Doc_AccID INT PRIMARY KEY,
+	Doc_AccID INT PRIMARY KEY auto_increment,
     DoctorID INT,       -- Unique identifier for each account
     AccountName VARCHAR(100) NOT NULL,             -- Name associated with the account
     Balance DECIMAL(10, 2) NOT NULL,
@@ -211,6 +188,9 @@ CREATE TABLE AccountTransactions (
     AccountID INT NOT NULL,                        -- Foreign key to Accounts table
     Amount DECIMAL(10, 2) NOT NULL,                -- Amount involved in the transaction (positive or negative)
     TransactionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Date and time of the transaction
+    DoctorID INT,
+    Doc_AccID INT,
+    HnP_AccID INT,
     AccountType VARCHAR(50) NOT NULL,
     Description VARCHAR(255) NOT NULL,
     FOREIGN KEY (AccountID) REFERENCES Accounts(AccountID),
@@ -225,6 +205,7 @@ CREATE TABLE ConsultationQueue_details (
 	QueueID INT NOT NULL,
 	DoctorID INT NOT NULL,
 	Date DATE NOT NULL,
+    isActive boolean,
     FOREIGN KEY (QueueID, DoctorID, Date) REFERENCES ConsultationQueue(QueueID, DoctorID, Date),
     FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
 	FOREIGN KEY (D_AppointmentID) REFERENCES Doctor_Appointments(D_AppointmentID)
@@ -294,3 +275,17 @@ CREATE TABLE AuditLog (
     OldValue JSON,
     NewValue JSON
 );
+
+-- account tables - static
+INSERT INTO doc_appointment_cost
+VALUES (4000.00);
+
+INSERT INTO Accounts (AccountType) VALUES
+    ('Doctor'),
+    ('Hospital'),
+    ('Pharmacy');
+
+INSERT INTO HospitalAndPhamacy_Acc (HnP_AccID, AccountName, AccountType, Balance, AccountID) VALUES
+	(1, 'Hospital Acc', 'Hospital', 0.00, 2),
+    (2, 'Pharmacy Acc', 'Pharmacy', 0.00, 3);
+    

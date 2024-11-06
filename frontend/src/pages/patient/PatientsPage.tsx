@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PatientList from '../../components/lists/PatientList';
 import SelectionControls from '../../components/SelectionControls';
+import PatientService from '../../services/PatientService';
+import { ToastContext } from '../../context/ToastContext';
 
 const PatientsPage: React.FC = () => {
   const navigate = useNavigate();
+  const { success, error } = useContext(ToastContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPatients, setSelectedPatients] = useState<number[]>([]);
 
@@ -27,9 +30,24 @@ const PatientsPage: React.FC = () => {
     }
   };
 
-  const handleDeletePatients = () => {
-    console.log('Delete patient(s)', selectedPatients);
-    setSelectedPatients([]);
+  const handleDeletePatients = async () => {
+    if (selectedPatients.length === 1) {
+      try {
+        const patientId = selectedPatients[0];
+        await PatientService.deletePatient(patientId);
+        success('Patient deleted successfully');
+        setSelectedPatients([]);
+        // Optionally, refresh the patient list after deletion
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          error(err.message);
+        } else {
+          error('Failed to delete patient. Please try again.');
+        }
+      }
+    } else {
+      error('Please select a single patient to delete.');
+    }
   };
 
   return (

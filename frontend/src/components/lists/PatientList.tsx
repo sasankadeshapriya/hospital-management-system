@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Table } from '../Table';
 import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PatientService, { Patient } from '../../services/PatientService';
+import ConfirmationModal from '../modal/ConfirmationModal';
+import { ToastContext } from '../../context/ToastContext';
 
 interface PatientListProps {
   onPatientSelect: (patientId: number) => void;
@@ -10,25 +12,26 @@ interface PatientListProps {
   searchQuery: string;
 }
 
-const PatientList: React.FC<PatientListProps> = ({ onPatientSelect, selectedPatients, searchQuery }) => {
+const PatientList: React.FC<PatientListProps> = ({ searchQuery }) => {
   const navigate = useNavigate();
+  const { success, error: showError } = useContext(ToastContext);
   const [patients, setPatients] = useState<(Patient & { id: number })[]>([]);
+  const [hiddenPatients, setHiddenPatients] = useState<number[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [patientToDelete, setPatientToDelete] = useState<number | null>(null);
   const [recordsPerPage, setRecordsPerPage] = useState(8);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Utility function to calculate age from DOB
   const calculateAge = (dob: string): number => {
     const birthDate = new Date(dob);
     const today = new Date();
     const age = today.getFullYear() - birthDate.getFullYear();
     const monthDifference = today.getMonth() - birthDate.getMonth();
-    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
-      return age - 1;
-    }
-    return age;
+    return monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())
+      ? age - 1
+      : age;
   };
 
-  // Utility function to display full gender
   const getGender = (genderCode: string): string => {
     return genderCode.toLowerCase() === 'f' ? 'Female' : 'Male';
   };
@@ -38,14 +41,17 @@ const PatientList: React.FC<PatientListProps> = ({ onPatientSelect, selectedPati
       try {
         const data = await PatientService.fetchPatients();
         setPatients(data.map((patient) => ({ ...patient, id: patient.PatientID })));
-      } catch (error) {
-        console.error('Error loading patients:', error);
+      } catch (err) {
+        console.error('Error loading patients:', err);
+        showError('Failed to load patients');
       }
     };
     loadPatients();
-  }, []);
+  }, [showError]);
 
-  const filteredPatients = patients.filter(({ FirstName, LastName, Gender, CNIC, Address, ContactNumber }) =>
+  const visiblePatients = patients.filter(({ PatientID }) => !hiddenPatients.includes(PatientID));
+
+  const filteredPatients = visiblePatients.filter(({ FirstName, LastName, Gender, CNIC, Address, ContactNumber }) =>
     [FirstName, LastName, Gender, CNIC, Address, ContactNumber].some((field) =>
       field.toLowerCase().includes(searchQuery.toLowerCase())
     )
@@ -68,23 +74,41 @@ const PatientList: React.FC<PatientListProps> = ({ onPatientSelect, selectedPati
     navigate(`/patient-details/${patientId}`);
   };
 
+  const handleUpdatePatient = (patientId: number) => {
+    navigate(`/patients/edit/${patientId}`);
+  };
+
+  const handleDeleteClick = (patientId: number) => {
+    setPatientToDelete(patientId);
+    setShowModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (patientToDelete !== null) {
+      try {
+        await PatientService.deletePatient(patientToDelete);
+        setHiddenPatients((prevHidden) => [...prevHidden, patientToDelete]);
+        success('Patient deleted successfully');
+      } catch (err) {
+        console.error('Error deleting patient:', err);
+        showError('Failed to delete patient');
+      } finally {
+        setShowModal(false);
+        setPatientToDelete(null);
+      }
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowModal(false);
+    setPatientToDelete(null);
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm h-[70vh] flex flex-col">
       <Table
         data={displayedPatients}
         columns={[
-          {
-            header: '',
-            accessor: (patient) => (
-              <input
-                type="checkbox"
-                checked={selectedPatients.includes(patient.PatientID)}
-                onChange={() => onPatientSelect(patient.PatientID)}
-                className="rounded border-gray-300"
-                title="Select"
-              />
-            ),
-          },
           {
             header: 'Patient',
             accessor: (patient) => (
@@ -111,9 +135,28 @@ const PatientList: React.FC<PatientListProps> = ({ onPatientSelect, selectedPati
                 onClick={() => navigateToDetails(patient.PatientID)}
                 className="px-4 py-2 text-sm text-indigo-600 hover:bg-indigo-50 rounded-lg flex items-center gap-2 transition-colors"
               >
-                More details
+                Details
                 <ChevronRight className="h-4 w-4" />
               </button>
+            ),
+          },
+          {
+            header: 'Actions',
+            accessor: (patient) => (
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={() => handleUpdatePatient(patient.PatientID)}
+                  className="px-4 py-2 text-sm text-green-600 rounded-lg hover:bg-green-50 transition-colors"
+                >
+                  Update
+                </button>
+                <button
+                  onClick={() => handleDeleteClick(patient.PatientID)}
+                  className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
             ),
           },
         ]}
@@ -123,6 +166,14 @@ const PatientList: React.FC<PatientListProps> = ({ onPatientSelect, selectedPati
         onPageChange={handlePageChange}
         onPageSizeChange={setRecordsPerPage}
       />
+
+      {showModal && (
+        <ConfirmationModal
+          message="Are you sure you want to delete this patient?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
     </div>
   );
 };
