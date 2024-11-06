@@ -71,6 +71,7 @@ call getAvailabilitySlotsByRoomNo(101);
 -- check availability
 DELIMITER $$
 CREATE PROCEDURE checkAvailability(
+		doc_id int,
 		room_no int,
         day_ VARCHAR(20),
         start_time time,
@@ -79,18 +80,27 @@ CREATE PROCEDURE checkAvailability(
 	BEGIN
 		select * 
 		from DoctorAvailability 
-		where RoomNO =  room_no
+		where (RoomNO =  room_no
 			AND lower(AvailableDay) = lower(day_)
             AND (isActive = true)
 			AND (
 					(start_time between StartTime and EndTime) OR
 					(end_time between StartTime and EndTime) OR
 					(start_time < StartTime and end_time > EndTime)
-				); 
+				))
+			OR(
+				DoctorID = doc_id
+				AND lower(AvailableDay) = lower(day_)
+				AND (isActive = true)
+				AND (
+						(start_time between StartTime and EndTime) OR
+						(end_time between StartTime and EndTime) OR
+						(start_time < StartTime and end_time > EndTime)
+					)); 
 	END $$
 DELIMITER ;
 
-call checkAvailability(101, 'monday', '20:00:00', '21:00:00');
+-- call checkAvailability(101, 'monday', '20:00:00', '21:00:00');
 
 -- insert
 
@@ -108,7 +118,7 @@ CREATE PROCEDURE insertSlot(
 	END $$
 DELIMITER ;
 
-call insertSlot(5,106, 'friday', '10:00:00', '20:00:00');
+-- call insertSlot(5,106, 'friday', '10:00:00', '20:00:00');
 
 -- ================================================================================================================================================================================
 -- update slot

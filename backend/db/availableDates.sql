@@ -1,4 +1,4 @@
-use hms;
+USE hms;
 
 DELIMITER //
 
@@ -28,9 +28,9 @@ BEGIN
     -- Declare the handler for the end of the doctor_cursor
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
-    -- Get the current date and calculate the end of the week (7 days ahead)
-    SET v_currentDate = CURDATE();
-    SET v_endOfWeek = DATE_ADD(v_currentDate, INTERVAL 7 DAY);
+    -- Get the current date and calculate the start date (3 days in the future) and end of the week (10 days ahead)
+    SET v_currentDate = DATE_ADD(CURDATE(), INTERVAL 3 DAY); -- Start from 3 days in the future
+    SET v_endOfWeek = DATE_ADD(v_currentDate, INTERVAL 7 DAY); -- End of the week from the new start date
 
     -- Open the doctor_cursor
     OPEN doctor_cursor;
@@ -50,17 +50,36 @@ BEGIN
         availability_loop: LOOP
             FETCH availability_cursor INTO v_dayOfWeek, v_roomNO, v_startTime, v_endTime;
 
-            -- Insert availability record for the doctor in the new table for the week
-            INSERT INTO DoctorWeeklyAvailability (DoctorID, Date, RoomNO, StartTime, EndTime, isAvailable, isActive)
-            VALUES (v_DoctorID, v_currentDate, v_roomNO, v_startTime, v_endTime, TRUE, TRUE);
-
-            -- Move to the next day for the next loop iteration
-            SET v_currentDate = DATE_ADD(v_currentDate, INTERVAL 1 DAY);
-
-            -- If we've reached the end of the week, stop the loop
-            IF v_currentDate > v_endOfWeek THEN
+            -- If no more availability slots, exit the loop
+            IF done THEN
                 LEAVE availability_loop;
             END IF;
+
+            -- Reset the current date for each doctor's availability check
+            SET v_currentDate = DATE_ADD(CURDATE(), INTERVAL 3 DAY); -- Reset to 3 days in the future
+
+            -- Loop through the week and insert availability records
+            WHILE v_currentDate <= v_endOfWeek DO
+                -- Check if the current date corresponds to the available day for the doctor
+                IF DAYNAME(v_currentDate) = v_dayOfWeek THEN
+                    -- Check if the record already exists before inserting
+                    IF NOT EXISTS (
+                        SELECT 1 FROM DoctorWeeklyAvailability 
+                        WHERE DoctorID = v_DoctorID 
+                        AND Date = v_currentDate 
+                        AND RoomNO = v_roomNO 
+                        AND StartTime = v_startTime 
+                        AND EndTime = v_endTime
+                    ) THEN
+                        -- Insert availability record for the doctor in the new table for the week
+                        INSERT INTO DoctorWeeklyAvailability (DoctorID, Date, RoomNO, StartTime, EndTime, isAvailable, isActive)
+                        VALUES (v_DoctorID, v_currentDate, v_roomNO, v_startTime, v_endTime, TRUE, TRUE);
+                    END IF;
+                END IF;
+
+                -- Move to the next day
+                SET v_currentDate = DATE_ADD(v_currentDate, INTERVAL 1 DAY);
+            END WHILE;
         END LOOP;
 
         -- Close the availability_cursor after processing the current doctor
@@ -76,9 +95,8 @@ END //
 
 DELIMITER ;
 
--- used to on event scheduler
+-- Show the event scheduler status
 SHOW VARIABLES LIKE 'event_scheduler';
-
 
 -- Enable event
 DELIMITER //

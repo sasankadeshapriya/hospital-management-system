@@ -1,3 +1,9 @@
+--  execution steps
+	-- 1. main.sql
+    -- 2. availableDates.sql
+    -- 3. data.sql
+    -- etc
+
 drop database hms;
 CREATE DATABASE HMS;
 USE HMS;
@@ -302,3 +308,15 @@ CREATE TABLE DoctorWeeklyAvailability (
     FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID) ON DELETE CASCADE, -- Ensures availability is removed if doctor is deleted
     UNIQUE (DoctorID, Date, RoomNO, StartTime)      -- Ensures no duplicates for the same slot (Doctor, Date, Room, Start)
 );
+
+-- update availability dates trigger
+DELIMITER $$
+
+CREATE TRIGGER after_insert_DoctorAvailability
+AFTER INSERT ON DoctorAvailability
+FOR EACH ROW
+BEGIN
+    CALL populateWeeklyAvailability();
+END $$
+
+DELIMITER ;
