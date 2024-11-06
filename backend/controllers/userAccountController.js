@@ -261,11 +261,67 @@ const getDoctorUserDetails = async (req, res) => {
   });
 };
 
+// Function to handle photo update request
+const updateUserPhoto = (req, res) => {
+  const userId = parseInt(req.params.userId, 10);
+  
+  // Check if a photo was uploaded
+  const photoPath = req.file ? `/uploads/${req.file.filename}` : null;
+  if (!photoPath) {
+    return res.status(400).json({ message: "No photo file uploaded" });
+  }
+
+  // Call updateUserPhoto in the database
+  const sql = "CALL UpdateUserPhoto(?, ?)";
+  db.query(sql, [userId, photoPath], (err, result) => {
+    if (err) {
+      console.error("Database error during photo update:", err);
+      return res.status(500).json({ message: "Something unexpected has occurred" });
+    }
+
+    console.log("Photo updated successfully");
+    return res.status(200).json({ message: "Photo updated successfully" });
+  });
+};
+
+
+// Function to get details for non-doctor users
+const getAllNonDoctorUsers = async (req, res) => {
+  // SQL query to select non-doctor users who are active
+  const sql = "SELECT * FROM get_all_non_doctor_users";
+  
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Something unexpected has occurred" });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "No non-doctor users found" });
+    }
+
+    // Add base URL for photo if it exists
+    const baseURL = process.env.BASE_URL || "http://localhost";
+    
+    // Loop through the result and modify photo URL for each user
+    result.forEach(user => {
+      // Set `Photo` URL with baseURL, use default if `Photo` is null
+      user.Photo = user.Photo 
+        ? `${baseURL}${user.Photo.startsWith('/uploads') ? user.Photo : `/uploads/${user.Photo}`}`
+        : `${baseURL}/uploads/default_pro.png`;
+    });
+
+    // Return the list of users with their photo URLs
+    res.status(200).json(result);
+  });
+};
 
 module.exports = {
   createUserAccount,
   deleteUserAccount,
   updateUserAccount,
   getNonDoctorUserDetails,
-  getDoctorUserDetails
+  getDoctorUserDetails,
+  updateUserPhoto,
+  getAllNonDoctorUsers
 };

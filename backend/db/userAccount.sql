@@ -358,3 +358,44 @@ WHERE
     ua.AccountType = 'Doctor';
 
 SELECT * FROM DoctorUserDetailsView WHERE UserID = 1;
+
+-- --------------------------------------------------------
+-- update user photo
+DELIMITER //
+
+CREATE PROCEDURE UpdateUserPhoto(
+    IN p_userId INT,
+    IN p_photoPath VARCHAR(255)
+)
+BEGIN
+    -- Update the Photo column for the specified user
+    UPDATE UserAccounts
+    SET Photo = p_photoPath
+    WHERE UserID = p_userId AND isActive = true;
+
+    -- Check if the update was successful and provide feedback
+    IF ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'User not found or inactive';
+    END IF;
+END //
+
+DELIMITER ;
+
+-- -----------------------------------------------------------------
+-- get all user other than doctors 
+CREATE VIEW get_all_non_doctor_users AS
+SELECT 
+    UserID, 
+    Name, 
+    Email, 
+    Address, 
+    Photo, 
+    DOB, 
+    ContactNumber, 
+    isActive
+FROM 
+    UserAccounts
+WHERE 
+    AccountType != 'Doctor' AND isActive = 1;
+
+SELECT * FROM get_all_non_doctor_users;
