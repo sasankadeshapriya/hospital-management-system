@@ -110,8 +110,8 @@ const insertAvailabilitySlot = async (req, res) => {
             return res.status(409).json({ message: "Time period invalid" });
         }
 
-        const checkSql = "call checkAvailability(?,?,?,?)";
-        db.query(checkSql, [RoomNO, AvailableDay, StartTime, EndTime], (err, checkResult) => {
+        const checkSql = "call checkAvailability(?,?,?,?,?)";
+        db.query(checkSql, [DoctorID,RoomNO, AvailableDay, StartTime, EndTime], (err, checkResult) => {
             if (err) {
                 console.error("Database error during availability check:", err);
                 return res.status(500).json({ message: "Something unexpected has occurred" });
@@ -120,7 +120,7 @@ const insertAvailabilitySlot = async (req, res) => {
 
 
             if (availableSlots.length > 0) {
-                return res.status(409).json({ message: "An availability slot with this room with this date and time already exists." });
+                return res.status(409).json({ message: "Time slot already allocated" });
             } else {
                 const values = [
                     DoctorID,
