@@ -182,6 +182,14 @@ CREATE procedure insertDoctorAppointment(
                 VALUES
 					(billing_id, 1, appointment_cost/2, NOW(),DoctorID_, doc_bank_acc_id, null, 'Doctor', 'Doctor fees'),
                     (billing_id, 2, appointment_cost/2, NOW(),null, null, 1, 'Hospital', 'Hospital fees');
+				
+                SELECT B.BillingID, B.D_AppointmentID, P.PatientID,CONCAT(P.FirstName, ' ', P.LastName) AS "Patient Name", B.Date, D.DoctorID, UA.Name AS "Doctor Name", B.Amount AS "Bill Amount"
+                FROM Billing B
+                INNER JOIN Patients P ON P.PatientID = B.PatientID
+                INNER JOIN Doctor_Appointments DA ON DA.D_AppointmentID = B.D_AppointmentID
+                INNER JOIN Doctors D ON D.DoctorID = DA.DoctorID
+                INNER JOIN UserAccounts UA ON UA.UserID = D.UserID
+                WHERE BillingID = billing_id;
 			ELSE
 			
 				SELECT IFNULL(MAX(QueueNumber), 0) + 1 INTO last_queue_number 
@@ -212,6 +220,14 @@ CREATE procedure insertDoctorAppointment(
                 VALUES
 					(billing_id, 1, appointment_cost/2, NOW(),DoctorID_, doc_bank_acc_id, null, 'Doctor', 'Doctor fees'),
                     (billing_id, 2, appointment_cost/2, NOW(),null, null, 1, 'Hospital', 'Hospital fees');
+                    
+				SELECT B.BillingID, B.D_AppointmentID, P.PatientID,CONCAT(P.FirstName, ' ', P.LastName) AS "Patient Name", B.Date, D.DoctorID, UA.Name AS "Doctor Name", B.Amount AS "Bill Amount"
+                FROM Billing B
+                INNER JOIN Patients P ON P.PatientID = B.PatientID
+                INNER JOIN Doctor_Appointments DA ON DA.D_AppointmentID = B.D_AppointmentID
+                INNER JOIN Doctors D ON D.DoctorID = DA.DoctorID
+                INNER JOIN UserAccounts UA ON UA.UserID = D.UserID
+                WHERE BillingID = billing_id;
 			END IF;
 		COMMIT;
 	END $$
@@ -263,8 +279,6 @@ CREATE PROCEDURE updateAppointmentStatusById(id int, ap_status varchar(20))
 DELIMITER ;
 
 call updateAppointmentStatusById(2, 'confirmed');
-
-
 
 select * from Doctor_Appointments;
 select * from ConsultationQueue;
