@@ -297,7 +297,8 @@ INSERT INTO HospitalAndPhamacy_Acc (HnP_AccID, AccountName, AccountType, Balance
     
 
 CREATE TABLE DoctorWeeklyAvailability (
-    AvailabilityID INT PRIMARY KEY AUTO_INCREMENT,  -- Unique identifier for the availability slot
+    WeekAvailabilityID INT PRIMARY KEY AUTO_INCREMENT,  -- Unique identifier for the availability slot
+    D_AvailabilityID INT,
     DoctorID INT NOT NULL,                          -- Foreign key to Doctors table
     Date DATE NOT NULL,                             -- Date for the availability (e.g., '2024-01-30')
     RoomNO INT NOT NULL,                            -- Room number for the availability

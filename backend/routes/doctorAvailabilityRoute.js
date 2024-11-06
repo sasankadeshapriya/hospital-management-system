@@ -12,4 +12,6 @@ router.post('/insert-slot', doctorAvailabilityController.insertAvailabilitySlot)
 router.put('/:id', doctorAvailabilityController.updateAvailabilitySlot);
 router.delete('/:id', doctorAvailabilityController.deleteAvailableSlotById)
 
+router.get('/doctor/:id/available-dates', doctorAvailabilityController.getAvailabilitySlotsByDocId);
+
 module.exports = router;

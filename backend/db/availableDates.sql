@@ -5,6 +5,7 @@ DELIMITER //
 CREATE PROCEDURE populateWeeklyAvailability()
 BEGIN
     -- Declare necessary variables for looping and fetching data
+    DECLARE v_doc_availability_id INT;
     DECLARE v_currentDate DATE;
     DECLARE v_endOfWeek DATE;
     DECLARE v_DoctorID INT;
@@ -21,7 +22,7 @@ BEGIN
 
     -- Declare the availability_cursor before the loop, so it is only declared once
     DECLARE availability_cursor CURSOR FOR
-        SELECT AvailableDay, RoomNO, StartTime, EndTime
+        SELECT AvailabilityID, AvailableDay, RoomNO, StartTime, EndTime
         FROM DoctorAvailability
         WHERE DoctorID = v_DoctorID;
 
@@ -48,7 +49,7 @@ BEGIN
 
         -- Loop through the availability slots for the current doctor
         availability_loop: LOOP
-            FETCH availability_cursor INTO v_dayOfWeek, v_roomNO, v_startTime, v_endTime;
+            FETCH availability_cursor INTO v_doc_availability_id, v_dayOfWeek, v_roomNO, v_startTime, v_endTime;
 
             -- If no more availability slots, exit the loop
             IF done THEN
@@ -65,15 +66,16 @@ BEGIN
                     -- Check if the record already exists before inserting
                     IF NOT EXISTS (
                         SELECT 1 FROM DoctorWeeklyAvailability 
-                        WHERE DoctorID = v_DoctorID 
+                        WHERE DoctorID = v_DoctorID
+                        AND D_AvailabilityID = v_doc_availability_id
                         AND Date = v_currentDate 
                         AND RoomNO = v_roomNO 
                         AND StartTime = v_startTime 
                         AND EndTime = v_endTime
                     ) THEN
                         -- Insert availability record for the doctor in the new table for the week
-                        INSERT INTO DoctorWeeklyAvailability (DoctorID, Date, RoomNO, StartTime, EndTime, isAvailable, isActive)
-                        VALUES (v_DoctorID, v_currentDate, v_roomNO, v_startTime, v_endTime, TRUE, TRUE);
+                        INSERT INTO DoctorWeeklyAvailability ( D_AvailabilityID,DoctorID, Date, RoomNO, StartTime, EndTime, isAvailable, isActive)
+                        VALUES (v_doc_availability_id, v_DoctorID, v_currentDate, v_roomNO, v_startTime, v_endTime, TRUE, TRUE);
                     END IF;
                 END IF;
 
@@ -109,4 +111,19 @@ BEGIN
     CALL populateWeeklyAvailability();
 END //
 
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE getAvailableDatesByDoctorId(id int)
+	BEGIN
+		select 
+			WeekAvailabilityID AS 'Id',
+            D_AvailabilityID AS 'AvailabilityID',
+            DoctorID, Date as 'AppointmentDate',
+            RoomNO,
+            StartTime,
+            EndTime
+		from DoctorWeeklyAvailability
+        where isAvailable = 1 AND isActive = 1;
+	END $$
 DELIMITER ;
