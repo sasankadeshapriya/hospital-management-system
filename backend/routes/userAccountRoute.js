@@ -30,6 +30,8 @@ router.post('/', userAccountController.createUserAccount);
 router.delete('/:userId', userAccountController.deleteUserAccount);
 router.put('/:userId', userAccountController.updateUserAccount);
 router.put('/photo/:userId', upload.single('Photo'), userAccountController.updateUserPhoto);
+router.put('/password/:userId', userAccountController.updateUserPassword);
+
 router
     .get('/non-doctor/:userId', userAccountController.getNonDoctorUserDetails)
     .get('/doctor/:userId', authenticateToken, authorizeRole(["Doctor", "Admin"]), userAccountController.getDoctorUserDetails)

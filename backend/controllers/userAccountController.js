@@ -142,13 +142,11 @@ const deleteUserAccount = (req, res) => {
   });
 };
 
-// function for update user account
 const updateUserAccount = async (req, res) => {
   try {
     const userId = parseInt(req.params.userId, 10);
     const {
       Name,
-      Password,
       Address,
       DOB,
       ContactNumber,
@@ -161,7 +159,7 @@ const updateUserAccount = async (req, res) => {
 
     // Validate user existence and active status before update
     const checkUserSql = "SELECT isActive FROM UserAccounts WHERE UserID = ?";
-    db.query(checkUserSql, [userId], async (err, result) => {
+    db.query(checkUserSql, [userId], (err, result) => {
       if (err) {
         console.error("Database error during user check:", err);
         return res.status(500).json({ message: "Something unexpected has occurred" });
@@ -171,15 +169,11 @@ const updateUserAccount = async (req, res) => {
         return res.status(404).json({ message: "User not found or inactive" });
       }
 
-      // Hash the password if provided
-      const hashedPassword = Password ? await bcrypt.hash(Password, 10) : null;
-
-      // Call the stored procedure
-      const sql = "CALL EditUserAccount(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      // Call the stored procedure without Password
+      const sql = "CALL EditUserAccount(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
       const values = [
         userId,
         Name,
-        hashedPassword || result[0].Password, // Use hashed password or keep current
         Address,
         DOB,
         ContactNumber,
@@ -205,6 +199,7 @@ const updateUserAccount = async (req, res) => {
     return res.status(500).json({ message: "Something unexpected has occurred" });
   }
 };
+
 
 
 // Function to get details for non-doctor users
@@ -316,6 +311,54 @@ const getAllNonDoctorUsers = async (req, res) => {
   });
 };
 
+const updateUserPassword = async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+    const { password } = req.body;
+
+    // Check if the password was provided
+    if (!password) {
+      return res.status(400).json({ message: "Password is required" });
+    }
+
+    // Step 1: Check if the user exists and is active
+    const checkUserSql = "SELECT isActive FROM UserAccounts WHERE UserID = ?";
+    db.query(checkUserSql, [userId], async (err, result) => {
+      if (err) {
+        console.error("Database error during user check:", err);
+        return res.status(500).json({ message: "Something unexpected has occurred" });
+      }
+
+      // If no user is found or if the user is inactive, return an error
+      if (result.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      } else if (result[0].isActive === 0) {
+        return res.status(403).json({ message: "User account is inactive" });
+      }
+
+      // Step 2: Hash the new password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Step 3: Update password in the database using a stored procedure or direct query
+      const sql = "CALL UpdateUserPassword(?, ?)";
+      db.query(sql, [userId, hashedPassword], (err, updateResult) => {
+        if (err) {
+          console.error("Database error during password update:", err);
+          return res.status(500).json({ message: "Something unexpected has occurred" });
+        }
+
+        console.log("Password updated successfully");
+        return res.status(200).json({ message: "Password updated successfully" });
+      });
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return res.status(500).json({ message: "Something unexpected has occurred" });
+  }
+};
+
+
+
 module.exports = {
   createUserAccount,
   deleteUserAccount,
@@ -323,5 +366,6 @@ module.exports = {
   getNonDoctorUserDetails,
   getDoctorUserDetails,
   updateUserPhoto,
-  getAllNonDoctorUsers
+  getAllNonDoctorUsers,
+  updateUserPassword
 };
