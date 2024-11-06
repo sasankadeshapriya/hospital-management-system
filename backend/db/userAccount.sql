@@ -399,3 +399,24 @@ WHERE
     AccountType != 'Doctor' AND isActive = 1;
 
 SELECT * FROM get_all_non_doctor_users;
+
+
+DELIMITER //
+
+CREATE TRIGGER after_doctor_insert
+AFTER INSERT ON Doctors
+FOR EACH ROW
+BEGIN
+    DECLARE doctorName VARCHAR(100);
+    
+    -- Fetch the doctor's name from the UserAccounts table based on UserID
+    SELECT Name INTO doctorName
+    FROM UserAccounts
+    WHERE UserID = NEW.UserID;
+
+    -- Insert into Doctor_Acc table after a new doctor is added
+    INSERT INTO Doctor_Acc (DoctorID, AccountName, Balance, AccountID)
+    VALUES (NEW.DoctorID, doctorName, 0, 1);  -- Assuming AccountID is always 1
+END //
+
+DELIMITER ;
