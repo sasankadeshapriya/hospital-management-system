@@ -163,13 +163,13 @@ CALL DeleteUserAccount(11);
 
 -- --------------------------------------------------------------------------
 -- Procedure to Edit User Account and Doctor details (without availability)
+-- Excluding Password update from EditUserAccount procedure
 
 DELIMITER $$
 
 CREATE PROCEDURE EditUserAccount(
     IN p_userId INT,
     IN p_name VARCHAR(100),
-    IN p_password VARCHAR(100),
     IN p_address VARCHAR(255),
     IN p_dob DATE,
     IN p_contactNumber VARCHAR(15),
@@ -189,10 +189,9 @@ BEGIN
 
     START TRANSACTION;
 
-    -- Update UserAccounts table
+    -- Update UserAccounts table (excluding password)
     UPDATE UserAccounts
     SET Name = p_name,
-        Password = p_password,
         Address = p_address,
         DOB = p_dob,
         ContactNumber = p_contactNumber,
@@ -218,40 +217,8 @@ END $$
 DELIMITER ;
 
 
--- Example: Updating a doctor's account details (without availability)
-CALL EditUserAccount(
-    14, -- UserID
-    'Dr. Updated Name', -- Name
-    'newpassword123', -- Password
-    'New Address', -- Address
-    '1980-01-01', -- DOB
-    '0712345678', -- ContactNumber
-    'Doctor', -- AccountType
-    true, -- isActive
-    'New Specialization', -- Specialization
-    'Active', -- Status
-    1 -- DepartmentID
-);
-
-
--- Example: Updating a staff member's account details
-CALL EditUserAccount(
-    6, -- UserID
-    'Updated Staff Name', -- Name
-    'staffpassword123', -- Password
-    'Updated Address', -- Address
-    '1990-05-15', -- DOB
-    '0789123456', -- ContactNumber
-    'Staff', -- AccountType
-    true, -- isActive
-    NULL, -- Specialization (not applicable)
-    NULL, -- Status (not applicable)
-    NULL -- DepartmentID (not applicable)
-);
-
-
 -- ---------------------------------------------
--- triggers for audit loggin updated account
+-- Trigger for Audit Logging on User Account Updates
 
 DELIMITER $$
 
@@ -259,13 +226,13 @@ CREATE TRIGGER after_UserAccounts_Update
 AFTER UPDATE ON UserAccounts
 FOR EACH ROW
 BEGIN
+    -- Avoid logging the password field changes in the audit log
     INSERT INTO AuditLog (UserID, Action, OldValue, NewValue)
     VALUES (
         OLD.UserID,
         'Update UserAccount',
         JSON_OBJECT(
             'Name', OLD.Name,
-            'Password', OLD.Password,
             'Address', OLD.Address,
             'DOB', OLD.DOB,
             'ContactNumber', OLD.ContactNumber,
@@ -274,7 +241,6 @@ BEGIN
         ),
         JSON_OBJECT(
             'Name', NEW.Name,
-            'Password', NEW.Password,
             'Address', NEW.Address,
             'DOB', NEW.DOB,
             'ContactNumber', NEW.ContactNumber,
@@ -282,6 +248,24 @@ BEGIN
             'isActive', NEW.isActive
         )
     );
+END $$
+
+DELIMITER ;
+
+-- --------------------------------------------------------------------------
+-- Procedure to Update User Password Separately
+
+DELIMITER $$
+
+CREATE PROCEDURE UpdateUserPassword(
+    IN p_userId INT,
+    IN p_password VARCHAR(100)
+)
+BEGIN
+    -- Update password in UserAccounts table
+    UPDATE UserAccounts
+    SET Password = p_password
+    WHERE UserID = p_userId;
 END $$
 
 DELIMITER ;
