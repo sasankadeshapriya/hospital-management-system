@@ -1,4 +1,6 @@
 const db = require('../db');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const getDoctors = async (req, res) => {
     try {
@@ -10,7 +12,7 @@ const getDoctors = async (req, res) => {
                 return res.status(500).json({ message: "Something unexpected has occurred" });
             }
 
-            const baseUrl = "http://localhost:5000/api/v1";
+            const baseUrl = process.env.BASE_URL;
 
             const parsedResult = result.map(row => ({
                 ...row,
@@ -41,7 +43,7 @@ const getDoctorById = async (req, res) => {
                 return res.status(500).json({ message: "Something unexpected has occurred" });
             }
 
-            const baseUrl = "http://localhost:5000/api/v1";
+            const baseUrl = process.env.BASE_URL;
 
             const doctor = result[0][0];
             if (doctor) {
