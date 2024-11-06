@@ -289,3 +289,16 @@ INSERT INTO HospitalAndPhamacy_Acc (HnP_AccID, AccountName, AccountType, Balance
 	(1, 'Hospital Acc', 'Hospital', 0.00, 2),
     (2, 'Pharmacy Acc', 'Pharmacy', 0.00, 3);
     
+
+CREATE TABLE DoctorWeeklyAvailability (
+    AvailabilityID INT PRIMARY KEY AUTO_INCREMENT,  -- Unique identifier for the availability slot
+    DoctorID INT NOT NULL,                          -- Foreign key to Doctors table
+    Date DATE NOT NULL,                             -- Date for the availability (e.g., '2024-01-30')
+    RoomNO INT NOT NULL,                            -- Room number for the availability
+    StartTime TIME NOT NULL,                        -- Start time of the availability slot
+    EndTime TIME NOT NULL,                          -- End time of the availability slot
+    isAvailable BOOLEAN NOT NULL,                   -- Whether the doctor is available on this specific day and time
+    isActive BOOLEAN NOT NULL,                      -- To track if this availability record is active
+    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID) ON DELETE CASCADE, -- Ensures availability is removed if doctor is deleted
+    UNIQUE (DoctorID, Date, RoomNO, StartTime)      -- Ensures no duplicates for the same slot (Doctor, Date, Room, Start)
+);
