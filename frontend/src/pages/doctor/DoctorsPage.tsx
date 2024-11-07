@@ -50,7 +50,7 @@ function DoctorsPage() {
 
         {/* Specialty Filter Section */}
         <div className="mb-6 flex gap-2">
-          {['All Doctors', 'Cardiology', 'Neurology', 'Pediatrics', 'Orthopedics', 'Dermatology'].map((specialty) => (
+          {['All Doctors', 'Cardiology', 'Neurology', 'Oncology', 'Pediatrics', 'Orthopedics', 'Dermatology', 'Psychiatry'].map((specialty) => (
             <button
               key={specialty}
               className={`px-4 py-2 rounded-lg text-sm transition-colors ${
