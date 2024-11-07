@@ -15,16 +15,17 @@ INSERT INTO Departments (DepartmentName, HOD) VALUES
     ('Psychiatry', 7);
 
 INSERT INTO UserAccounts (Name, Email, Password, Address, Photo, DOB, ContactNumber, AccountType, isActive) VALUES
-    ('Dr. Alice Thompson', 'alice.thompson@example.com', 'password123', '123 Main St, Colombo', '/images/alice.jpg', '1975-05-12', '0711234567', 'Doctor', true),
-    ('Dr. Robert Williams', 'robert.williams@example.com', 'password123', '456 Elm St, Galle', '/images/robert.jpg', '1978-08-23', '0717654321', 'Doctor', true),
-    ('Dr. Susan Taylor', 'susan.taylor@example.com', 'password123', '789 Oak St, Kandy', '/images/susan.jpg', '1980-03-14', '0771234567', 'Doctor', true),
-    ('Dr. John Brown', 'john.brown@example.com', 'password123', '101 Pine St, Matara', '/images/john.jpg', '1983-11-29', '0757654321', 'Doctor', true),
-    ('Dr. Emma White', 'emma.white@example.com', 'password123', '202 Cedar St, Kurunegala', '/images/emma.jpg', '1979-06-18', '0719876543', 'Doctor', true),
-    ('Dr. Sophia Clark', 'sophia.clark@example.com', 'password123', '606 Cypress St, Kegalle', '/images/sophia.jpg', '1982-02-25', '0724561234', 'Doctor', true),
-    ('Dr. Daniel Evans', 'daniel.evans@example.com', 'password123', '707 Spruce St, Anuradhapura', '/images/daniel.jpg', '1977-11-17', '0716543210', 'Doctor', true),
-    ('Sarah Lewis', 'sarah.lewis@example.com', 'password123', '303 Maple St, Negombo', '/images/sarah.jpg', '1985-01-21', '0714567890', 'Receptionist', true),
-    ('Linda Lee', 'linda.lee@example.com', 'password123', '404 Birch St, Jaffna', '/images/linda.jpg', '1990-07-14', '0761234567', 'Lab Assistant', true),
-    ('James Walker', 'james.walker@example.com', 'password123', '505 Walnut St, Colombo', '/images/james.jpg', '1984-10-08', '0759876543', 'Pharmacist', true);
+    ('Dr. Alice Thompson', 'alice.thompson@example.com', 'password123', '123 Main St, Colombo', '/uploads/default_pro.png', '1975-05-12', '0711234567', 'Doctor', true),
+    ('Dr. Robert Williams', 'robert.williams@example.com', 'password123', '456 Elm St, Galle', '/uploads/default_pro.png', '1978-08-23', '0717654321', 'Doctor', true),
+    ('Dr. Susan Taylor', 'susan.taylor@example.com', 'password123', '789 Oak St, Kandy', '/uploads/default_pro.png', '1980-03-14', '0771234567', 'Doctor', true),
+    ('Dr. John Brown', 'john.brown@example.com', 'password123', '101 Pine St, Matara', '/uploads/default_pro.png', '1983-11-29', '0757654321', 'Doctor', true),
+    ('Dr. Emma White', 'emma.white@example.com', 'password123', '202 Cedar St, Kurunegala', '/uploads/default_pro.png', '1979-06-18', '0719876543', 'Doctor', true),
+    ('Dr. Sophia Clark', 'sophia.clark@example.com', 'password123', '606 Cypress St, Kegalle', '/uploads/default_pro.png', '1982-02-25', '0724561234', 'Doctor', true),
+    ('Dr. Daniel Evans', 'daniel.evans@example.com', 'password123', '707 Spruce St, Anuradhapura', '/uploads/default_pro.png', '1977-11-17', '0716543210', 'Doctor', true),
+    ('Sarah Lewis', 'sarah.lewis@example.com', 'password123', '303 Maple St, Negombo', '/uploads/default_pro.png', '1985-01-21', '0714567890', 'Receptionist', true),
+    ('Linda Lee', 'linda.lee@example.com', 'password123', '404 Birch St, Jaffna', '/uploads/default_pro.png', '1990-07-14', '0761234567', 'Lab Assistant', true),
+    ('James Walker', 'james.walker@example.com', 'password123', '505 Walnut St, Colombo', '/uploads/default_pro.png', '1984-10-08', '0759876543', 'Pharmacist', true),
+    ('Super Admin', 'admin@example.com', 'password123', '505 Walnut St, Colombo', '/uploads/admin.jpg', '1984-10-08', '0759876543', 'Admin', true);
 
 -- Sample Data for Doctors Table
 INSERT INTO Doctors (DepartmentID, UserID, Specialization, Status, DOJ, isActive) VALUES

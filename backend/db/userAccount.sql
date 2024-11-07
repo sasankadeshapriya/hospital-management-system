@@ -86,7 +86,7 @@ CALL CreateUserAccountWithAvailability(
     'sasanka@example.com',          -- p_Email
     'password123',                         -- p_Password
     '123 Main St, Colombo',                -- p_Address
-    '/images/alice.jpg',                   -- p_Photo
+    '/uploads/default_pro.png',                   -- p_Photo
     '1975-05-12',                          -- p_DOB
     '0711234567',                          -- p_ContactNumber
     'Doctor',                              -- p_AccountType
@@ -106,7 +106,7 @@ CALL CreateUserAccountWithAvailability(
     'sarah.lewis@example.com',             -- p_Email
     'password123',                         -- p_Password
     '303 Maple St, Negombo',               -- p_Address
-    '/images/sarah.jpg',                   -- p_Photo
+    '/uploads/default_pro.png',                   -- p_Photo
     '1985-01-21',                          -- p_DOB
     '0714567890',                          -- p_ContactNumber
     'Receptionist',                        -- p_AccountType
@@ -380,9 +380,7 @@ SELECT
 FROM 
     UserAccounts
 WHERE 
-    AccountType != 'Doctor' AND isActive = 1;
-
-SELECT * FROM get_all_non_doctor_users;
+    AccountType NOT IN ('Doctor', 'Admin') AND isActive = 1;
 
 
 DELIMITER //
