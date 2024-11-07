@@ -50,7 +50,7 @@ const createUserAccount = async (req, res) => {
         Availability
       } = req.body;
 
-      const isActive = req.body.isActive === 'true';
+      const isActive = req.body.isActive == 1;
       const DepartmentID = parseInt(req.body.DepartmentID, 10);
 
       // Check if DepartmentID is a valid number
