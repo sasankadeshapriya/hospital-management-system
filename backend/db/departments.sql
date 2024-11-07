@@ -23,23 +23,41 @@ DELIMITER //
 
 CREATE PROCEDURE GetDoctorsByDepartmentID(IN departmentID INT)
 BEGIN
-    SELECT 
-        u.Name AS DoctorName,
-        u.Photo AS DoctorPhoto
+    SELECT
+		dpt.DepartmentName,
+        (SELECT u.Name AS HodName
+			FROM Doctors d
+			INNER JOIN Departments dpt ON dpt.HOD = d.DoctorID
+			INNER JOIN UserAccounts u ON d.UserID = u.UserID
+			WHERE dpt.DepartmentID = departmentID) AS HOD,
+		CAST(
+            JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'DoctorID', d.DoctorID,
+                    'DoctorName', u.Name,
+                    'DoctorPhoto', u.Photo,
+                    'Specialization', d.Specialization,
+                    'EmploymentStatus', d.Status,
+                    'DateJoined', d.DOJ
+                )
+            ) AS JSON
+        ) AS Doctors
     FROM 
         Doctors d
-    JOIN 
-        UserAccounts u ON d.UserID = u.UserID
+    INNER JOIN UserAccounts u ON d.UserID = u.UserID
+    INNER JOIN Departments dpt ON dpt.DepartmentID = d.DepartmentID
     WHERE 
         d.DepartmentID = departmentID
         AND d.Status = 'Active'
-        AND d.isActive = TRUE; 
+        AND d.isActive = TRUE
+	GROUP BY 
+        dpt.DepartmentName;
 END //
 
 DELIMITER ;
 
-CALL GetDoctorsByDepartmentID(1);
-
+CALL GetDoctorsByDepartmentID(8);
+drop procedure GetDoctorsByDepartmentID;
 -- -------------------------------------------------------------------------------------------------------------------------------------
 -- insert department
 
