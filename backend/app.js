@@ -25,6 +25,7 @@ const userAccountRoute = require('./routes/userAccountRoute');
 const medicalHistoryRoute = require('./routes/medicalHistoryRoute');
 const userAuthRoute = require('./routes/userAuthRoute');
 const doctorRoute = require('./routes/doctorRoute');
+const adminDashboardRoute = require('./routes/adminDashboardRoute');
 
 // Use Routes
 app.use('/api/v1/patients', patientsRoute);
@@ -38,6 +39,6 @@ app.use('/api/v1/medical-history', medicalHistoryRoute);
 app.use('/api/v1/doctors', doctorRoute);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/v1', userAuthRoute);
-
+app.use('/api/v1/admin', adminDashboardRoute);
 
 module.exports = app;
