@@ -18,4 +18,16 @@ db.connect(err => {
     console.log('Connected to MySQL Database');
 });
 
+// Wrap query function in a promise
+db.queryPromise = (query, params = []) => {
+    return new Promise((resolve, reject) => {
+        db.query(query, params, (error, results) => {
+            if (error) {
+                return reject(error);
+            }
+            resolve(results);
+        });
+    });
+};
+
 module.exports = db;
