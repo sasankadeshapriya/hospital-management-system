@@ -4,6 +4,7 @@
 CREATE OR REPLACE VIEW vw_Doctors AS
     SELECT 
         D.DoctorID,
+        UA.UserID,
         UA.Name,
         D.Specialization,
         D.Status AS "Employment Status",
@@ -53,6 +54,7 @@ CREATE PROCEDURE getDoctorsById(IN doc_id INT)
 BEGIN
     SELECT 
         D.DoctorID,
+        UA.UserID,
         UA.Name,
         D.Specialization,
         D.Status AS "Employeement Status",
@@ -77,7 +79,7 @@ BEGIN
     FROM Doctors D 
     INNER JOIN UserAccounts UA ON D.UserID = UA.UserID
     INNER JOIN Departments DPT ON D.DepartmentID = DPT.DepartmentID
-    INNER JOIN DoctorAvailability DAV ON D.DoctorID = DAV.DoctorID
+    LEFT JOIN DoctorAvailability DAV ON D.DoctorID = DAV.DoctorID
     WHERE D.isActive = 1 AND D.DoctorID = doc_id
     GROUP BY D.DoctorID;
 END $$

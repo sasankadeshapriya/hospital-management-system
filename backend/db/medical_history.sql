@@ -84,36 +84,5 @@ DELIMITER ;
 select updateMedicalHistoryById(6, " test", "treatment test", "allr test", "sergerie test", "family test");
 
 
--- ================================================================================================================================================================================
--- delete medical history by id - function
-
-DELIMITER $$
-CREATE function updateMedicalHistoryById(
-		in_PatientID INT,
-		in_Diagnosis TEXT,
-		in_TreatmentHistory TEXT,
-		in_Allergies TEXT,
-		in_PreviousSurgeries TEXT,
-		in_FamilyHistory TEXT
-)
-returns varchar(50)
-deterministic
-BEGIN
-		update MedicalHistory
-		set
-			Diagnosis = in_Diagnosis,
-			TreatmentHistory = in_TreatmentHistory,
-			Allergies = in_Allergies,
-			PreviousSurgeries = in_PreviousSurgeries,
-			FamilyHistory = in_FamilyHistory
-		where PatientID = in_PatientID;
-        
-        return "Medical history updated successfully";
-END $$
-DELIMITER ;
-
-select updateMedicalHistoryById(6, " test", "treatment test", "allr test", "sergerie test", "family test");
-
-
 select * from medicalhistory;
 select * from patients;

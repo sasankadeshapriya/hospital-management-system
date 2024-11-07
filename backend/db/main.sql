@@ -1,8 +1,9 @@
 --  execution steps
-	-- 1. main.sql
-    -- 2. availableDates.sql
-    -- 3. data.sql
-    -- etc
+-- 	1. main.sql
+-- 	2. availableDates.sql
+-- 	3. data.sql
+-- 	4. doc_availability.sql
+--     -- etc-- 
 
 drop database hms;
 CREATE DATABASE HMS;
@@ -282,7 +283,7 @@ CREATE TABLE AuditLog (
     NewValue JSON
 );
 
--- account tables - static
+-- account tables - static -- DO NOT CHANGE
 INSERT INTO doc_appointment_cost
 VALUES (4000.00);
 
