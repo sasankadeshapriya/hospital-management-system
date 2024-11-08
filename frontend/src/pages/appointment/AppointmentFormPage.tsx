@@ -28,6 +28,7 @@ const AppointmentFormPage: React.FC = () => {
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
   const [doctorDetails, setDoctorDetails] = useState<Doctor | null>(null);
+  const [doctorAvailability, setDoctorAvailability] = useState<any[]>([]);
 
   // Fetch doctors and patients
   const fetchData = useCallback(async () => {
@@ -66,115 +67,83 @@ const AppointmentFormPage: React.FC = () => {
     (doctor) => doctor.DoctorID.toString() === selectedDoctor
   );
 
-  // Fetch doctor availability when doctor selection changes
-  useEffect(() => {
-    if (!selectedDoctorData) {
-      setAvailableDates([]);
-      return;
-    }
+// Fetch doctor availability when doctor selection changes
+useEffect(() => {
+  if (!selectedDoctorData) return;
 
-    const fetchAvailability = async () => {
-      try {
-        const availability = await DoctorService.fetchDoctorAvailability(selectedDoctorData.DoctorID);
-        setAvailableDates(generateAvailableDates(availability));
-      } catch (err) {
-        console.error('Error fetching doctor availability:', err);
-        error('Failed to fetch doctor availability');
-      }
-    };
-    fetchAvailability();
-  }, [selectedDoctor, selectedDoctorData, error]);
-
-  // Fetch available time slots when date is selected
-  useEffect(() => {
-    if (!selectedDate || !selectedDoctorData) return;
-
-    const fetchAvailableTimeSlots = async () => {
-      try {
-        const availability = await DoctorService.fetchDoctorAvailability(selectedDoctorData.DoctorID);
-        const appointments = await AppointmentService.fetchAppointmentsByDoctorId(selectedDoctorData.DoctorID);
-        const timeSlots = generateAvailableTimeSlots(availability, appointments, selectedDate);
-        setAvailableTimeSlots(timeSlots);
-        setSelectedTime('');
-      } catch (err) {
-        console.error('Error fetching available time slots:', err);
-        error('Failed to fetch available time slots');
-      }
-    };
-    fetchAvailableTimeSlots();
-  }, [selectedDate, selectedDoctorData, error]);
-
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedDate) return;
-
-    const appointment = {
-      AppointmentDate: selectedDate.toISOString().split('T')[0],
-      AppointmentTime: selectedTime,
-      Status: 'Pending',
-      PatientID: parseInt(selectedPatient),
-      DoctorID: parseInt(selectedDoctor),
-      AppointmentType: appointmentType,
-    };
-
+  const fetchAvailability = async () => {
     try {
-      await AppointmentService.createAppointment(appointment);
-      success('Appointment booked successfully!');
-      navigate('/appointments');
-    } catch (err) {
-      console.error('Error creating appointment:', err);
-      error('Failed to create appointment');
-    }
-  };
+      const availability = await DoctorService.fetchDoctorAvailability(selectedDoctorData.DoctorID);
 
-  // Helper function to generate available dates based on doctor's availability
-  const generateAvailableDates = (availability: any[]): string[] => {
-    const daysOfWeek = availability.map((slot) => slot['Available Day'].toLowerCase());
-    const dates = [];
-    const today = new Date();
-    const daysToCheck = 30;
+      // Log the availability to inspect its structure
+      console.log('Doctor availability response:', availability);
 
-    for (let i = 0; i < daysToCheck; i++) {
-      const date = new Date();
-      date.setDate(today.getDate() + i);
-      date.setHours(0, 0, 0, 0);  // Normalize time
-
-      const dayName = date.toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
-
-      if (daysOfWeek.includes(dayName)) {
-        dates.push(date.toISOString().split('T')[0]); // Format as YYYY-MM-DD
+      // Ensure the availability is an array
+      if (Array.isArray(availability) && availability.length > 0) {
+        setDoctorAvailability(availability); // Set availability data
+        setAvailableDates(generateAvailableDates(availability)); // Generate available dates
+      } else {
+        // Handle the case where availability is not in the expected array format
+        console.error('Doctor availability data is not in the expected format');
+        setDoctorAvailability([]);
+        setAvailableDates([]);
       }
+    } catch (err) {
+      console.error('Error fetching doctor availability:', err);
+      error('Failed to fetch doctor availability');
     }
-
-    return dates;
   };
 
-  // Helper function to generate available time slots based on availability and existing appointments
-  const generateAvailableTimeSlots = (
-    availability: any[],
-    appointments: any[],
-    selectedDate: Date
-  ): string[] => {
+  fetchAvailability();
+}, [selectedDoctor, selectedDoctorData, error]);
+
+// Helper function to generate available dates based on doctor's availability
+const generateAvailableDates = (availability: any[]): string[] => {
+  const daysOfWeek = availability.map((slot) => slot['Available Day'].toLowerCase());
+  const dates = [];
+  const today = new Date();
+  const daysToCheck = 30;
+
+  for (let i = 0; i < daysToCheck; i++) {
+    const date = new Date();
+    date.setDate(today.getDate() + i);
+    date.setHours(0, 0, 0, 0);  // Normalize time
+
+    const dayName = date.toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
+
+    if (daysOfWeek.includes(dayName)) {
+      dates.push(date.toISOString().split('T')[0]); // Format as YYYY-MM-DD
+    }
+  }
+
+  return dates;
+};
+
+
+ // Fetch available time slots when a date is selected
+useEffect(() => {
+  if (!selectedDate || !doctorAvailability.length) return;
+
+  const fetchAvailableTimeSlots = () => {
     const dayName = selectedDate.toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
-    const availableSlotsForDay = availability.filter(
+    const availableSlotsForDay = doctorAvailability.filter(
       (slot) => slot['Available Day'].toLowerCase() === dayName
     );
-
-    if (availableSlotsForDay.length === 0) return []; // No slots for this day
 
     let timeSlots: string[] = [];
     availableSlotsForDay.forEach((slot) => {
       const { 'Start Time': startTime, 'End Time': endTime } = slot;
-      timeSlots = [...timeSlots, ...generateTimeSlots(startTime, endTime, 30)];
+      
+      // Combine start time and end time into one time slot
+      timeSlots.push(`${startTime} - ${endTime}`);
     });
 
-    const bookedTimes = appointments
-      .filter((appointment) => new Date(appointment.AppointmentDate).toDateString() === selectedDate.toDateString())
-      .map((appointment) => appointment.AppointmentTime.slice(0, 5));
-
-    return timeSlots.filter((time) => !bookedTimes.includes(time));
+    setAvailableTimeSlots(timeSlots);
+    setSelectedTime('');  // Reset selected time
   };
+
+  fetchAvailableTimeSlots();
+}, [selectedDate, doctorAvailability]);
 
   // Helper function to generate time slots
   const generateTimeSlots = (start: string, end: string, interval: number): string[] => {
@@ -201,6 +170,33 @@ const AppointmentFormPage: React.FC = () => {
   const formatTime = (date: Date): string => {
     return date.toTimeString().slice(0, 5); // HH:MM
   };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedDate || !selectedTime) return; // Ensure that a date and time are selected
+  
+    const appointment = {
+      AppointmentDate: selectedDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+      AppointmentTime: selectedTime,
+      Status: 'Pending',
+      PatientID: parseInt(selectedPatient),
+      DoctorID: parseInt(selectedDoctor),
+      AppointmentType: appointmentType,
+      AvailabilityID: doctorAvailability.find(
+        (slot) => `${slot['Start Time']} - ${slot['End Time']}` === selectedTime
+      )?.AvailabilityID, // Find the correct AvailabilityID based on the selected time
+    };
+  
+    try {
+      await AppointmentService.createAppointment(appointment);
+      success('Appointment booked successfully!');
+      navigate('/appointments');
+    } catch (err) {
+      console.error('Error creating appointment:', err);
+      error('Failed to create appointment');
+    }
+  };
+  
 
   return (
     <div className="max-w-6xl mx-auto">

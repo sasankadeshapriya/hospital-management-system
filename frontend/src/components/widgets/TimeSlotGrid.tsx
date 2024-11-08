@@ -1,10 +1,9 @@
-// src/components/widgets/TimeSlotGrid.tsx
 import React from 'react';
 
 interface TimeSlotGridProps {
   selectedTime: string;
   onSelectTime: (time: string) => void;
-  availableSlots: string[];
+  availableSlots: string[];  // Available time slots based on selected day
 }
 
 export function TimeSlotGrid({
@@ -12,19 +11,11 @@ export function TimeSlotGrid({
   onSelectTime,
   availableSlots,
 }: TimeSlotGridProps) {
-  // You can remove the static allTimeSlots array and render based on availableSlots
-  const timeSlotRows = [
-    ['09:00', '09:30', '10:00', '10:30'],
-    ['11:00', '11:30', '12:00', '12:30'],
-    ['13:00', '13:30', '14:00', '14:30'],
-    ['15:00', '15:30', '16:00', '16:30'],
-  ];
-
   return (
     <div className="grid gap-2">
-      {timeSlotRows.map((row, rowIndex) => (
-        <div key={rowIndex} className="grid grid-cols-4 gap-2">
-          {row.map((time) => (
+      {availableSlots.length > 0 ? (
+        <div className="grid grid-cols-4 gap-2">
+          {availableSlots.map((time) => (
             <button
               key={time}
               type="button"
@@ -44,8 +35,9 @@ export function TimeSlotGrid({
             </button>
           ))}
         </div>
-      ))}
+      ) : (
+        <div className="text-gray-500">No available time slots for the selected date.</div>
+      )}
     </div>
   );
 }
-
