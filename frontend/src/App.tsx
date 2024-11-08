@@ -23,6 +23,7 @@ import DepartmentUpdateFormPage from './pages/department/DepartmentFormPage';
 import LabTestsPage from './pages/lab/LabTestsPage';
 import LabTestFormPage from './pages/lab/LabTestFormPage';
 import MedicalHistoryFormPage from './pages/medical-history/MedicalHistoryFormPage';
+import AddAvailabilityPage from './pages/availability/AddAvailabilityPage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -70,6 +71,7 @@ function App() {
             <Route path="/labtests/edit/:id" element={<LabTestFormPage />} />
             <Route path="/medical-history/add/:id" element={<MedicalHistoryFormPage />} />
             <Route path="/medical-history/edit/:id" element={<MedicalHistoryFormPage />} />
+            <Route path="/availability/add/:doctorId" element={<AddAvailabilityPage />} />
             <Route path="*" element={<div>Page not found</div>} />
           </Routes>
         </div>
