@@ -25,7 +25,7 @@ INSERT INTO UserAccounts (Name, Email, Password, Address, Photo, DOB, ContactNum
     ('Sarah Lewis', 'sarah.lewis@example.com', 'password123', '303 Maple St, Negombo', '/uploads/default_pro.png', '1985-01-21', '0714567890', 'Receptionist', true),
     ('Linda Lee', 'linda.lee@example.com', 'password123', '404 Birch St, Jaffna', '/uploads/default_pro.png', '1990-07-14', '0761234567', 'Lab Assistant', true),
     ('James Walker', 'james.walker@example.com', 'password123', '505 Walnut St, Colombo', '/uploads/default_pro.png', '1984-10-08', '0759876543', 'Pharmacist', true),
-    ('Super Admin', 'admin@example.com', 'password123', '505 Walnut St, Colombo', '/uploads/admin.jpg', '1984-10-08', '0759876543', 'Admin', true);
+    ('Super Admin', 'admin@example.com', '$2b$10$/i5b1m4Wbp9nGAeTjcK4j.m0hEIv/g312OAmeR9D2YblJ/juFnrMe', '505 Walnut St, Colombo', '/uploads/admin.jpg', '1984-10-08', '0759876543', 'Admin', true);
 
 -- Sample Data for Doctors Table
 INSERT INTO Doctors (DepartmentID, UserID, Specialization, Status, DOJ, isActive) VALUES
