@@ -1,4 +1,3 @@
-// src/components/lists/DoctorAppointmentList.tsx
 import React, { useState, useEffect, useContext } from 'react';
 import { Table } from '../Table';
 import { ChevronRight } from 'lucide-react';
@@ -79,6 +78,23 @@ const DoctorAppointmentList: React.FC<DoctorAppointmentListProps> = ({ searchQue
     setAppointmentToDelete(null);
   };
 
+  // Handle checkbox change (status update)
+  const handleStatusChange = async (appointmentId: number, isChecked: boolean) => {
+    const newStatus = isChecked ? 'Confirmed' : 'Pending';
+    try {
+      await AppointmentService.updateAppointmentStatus(appointmentId, newStatus);
+      setAppointments((prevAppointments) =>
+        prevAppointments.map((appointment) =>
+          appointment.D_AppointmentID === appointmentId ? { ...appointment, Status: newStatus } : appointment
+        )
+      );
+      success(`Appointment status updated to ${newStatus}`);
+    } catch (error) {
+      showError('Failed to update status');
+      console.error('Error updating status:', error);
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm h-[70vh] flex flex-col">
       <Table
@@ -91,17 +107,25 @@ const DoctorAppointmentList: React.FC<DoctorAppointmentListProps> = ({ searchQue
           {
             header: 'Status',
             accessor: (appointment) => (
-              <span
-                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  appointment.Status === 'Confirmed'
-                    ? 'bg-green-100 text-green-800'
-                    : appointment.Status === 'Pending'
-                    ? 'bg-yellow-100 text-yellow-800'
-                    : 'bg-gray-100 text-gray-800'
-                }`}
-              >
-                {appointment.Status}
-              </span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={appointment.Status === 'Confirmed'}
+                  onChange={(e) => handleStatusChange(appointment.D_AppointmentID, e.target.checked)}
+                  className="form-checkbox h-5 w-5 text-green-600"
+                />
+                <span
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    appointment.Status === 'Confirmed'
+                      ? 'bg-green-100 text-green-800'
+                      : appointment.Status === 'Pending'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : 'bg-gray-100 text-gray-800'
+                  }`}
+                >
+                  {appointment.Status}
+                </span>
+              </div>
             ),
           },
           {

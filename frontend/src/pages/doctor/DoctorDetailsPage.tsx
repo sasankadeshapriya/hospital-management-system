@@ -22,10 +22,11 @@ interface StatsCardProps {
 }
 
 interface AvailabilitySchedule {
+  DoctorID: number;
+  RoomNO: number;
   AvailableDay: string;
   StartTime: string;
   EndTime: string;
-  RoomNO: string;
 }
 
 function StatsCard({ title, value, Icon, color = 'bg-indigo-600' }: StatsCardProps) {
@@ -112,10 +113,27 @@ function DoctorDetailsPage() {
   };
 
   const AvailabilityScheduleComponent = ({ availability }: { availability: AvailabilitySchedule[] }) => {
+    const navigate = useNavigate(); // Initialize useNavigate hook
+  
+    const handleAvailabilityUpdate = () => {
+      // Logic for updating availability schedule
+      console.log("Updating availability schedule...");
+    };
+  
+    const handleAddAvailability = () => {
+      if (doctor) {
+        // Pass the DoctorID in the URL when navigating
+        navigate(`/availability/add/${doctor.DoctorID}`);
+      }
+    };
+  
+    // Check if there are any availability records
+    const hasAvailability = availability.length > 0;
+  
     return (
       <div className="bg-white rounded-xl p-6 shadow-sm mt-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Weekly Schedule</h3>
-        {availability.length > 0 ? (
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Available Time</h3>
+        {hasAvailability ? (
           availability.map((schedule) => (
             <div key={schedule.RoomNO} className="flex items-center justify-between py-2 border-b border-gray-100">
               <div>
@@ -134,10 +152,27 @@ function DoctorDetailsPage() {
         ) : (
           <p className="text-center text-gray-500">No schedule available</p>
         )}
+        <div className="flex gap-4 mt-10 justify-end">
+          {/* Add Button */}
+          {/* <button
+            onClick={handleAddAvailability} // Navigate to add availability form
+            className="flex items-center justify-center px-4 py-2 bg-indigo-100 text-indigo-800 rounded-lg hover:bg-indigo-200"
+          >
+            Add
+          </button> */}
+  
+          {/* Update Button (only enabled if availability exists) */}
+          <button
+            onClick={handleAvailabilityUpdate}
+            disabled={!hasAvailability} // Disable if no records
+            className={`flex items-center justify-center px-4 py-2 ${hasAvailability ? 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200' : 'bg-gray-300 text-gray-500 cursor-not-allowed'} rounded-lg`}
+          >
+            Update
+          </button>
+        </div>
       </div>
     );
   };
-
   const AppointmentCard = ({ appointment }: { appointment: Appointment }) => {
     const statusClass = appointment.Status === 'Completed' 
       ? 'bg-green-100 text-green-800'
@@ -236,9 +271,8 @@ function DoctorDetailsPage() {
           </div>
 
           <div className="lg:col-span-2 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1   gap-6">
               <StatsCard title="Today's Appointments" value={todaysAppointmentCount || 'No appointments'} Icon={Calendar} color="bg-pink-500" />
-              <StatsCard title="Total Revenue" value="$15,000" Icon={DollarSign} color="bg-green-500" />
             </div>
 
             <div className="bg-white rounded-xl p-6 shadow-sm">

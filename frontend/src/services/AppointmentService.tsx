@@ -13,7 +13,7 @@ export interface Appointment {
 }
 
 class AppointmentService {
-  private baseUrl = 'http://localhost:5000/api/v1/doc-appointments';
+  private baseUrl = `${import.meta.env.VITE_API_URL}/doc-appointments`;
 
   // Fetch all appointments
   async fetchAppointments(): Promise<Appointment[]> {
@@ -72,6 +72,80 @@ class AppointmentService {
         throw error;
       }
     }
+
+     // Create a new appointment
+  async createAppointment(appointmentData: {
+    AppointmentDate: string;
+    AppointmentTime: string;
+    Status: string;
+    PatientID: number;
+    DoctorID: number;
+    AppointmentType: string;
+    AvailabilityID: number; // This is added based on your requirement
+  }): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/book-appointment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(appointmentData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to book appointment');
+      }
+
+      const responseData = await response.json();
+      return responseData; // This will contain the response data from the API
+    } catch (error) {
+      console.error('Error creating appointment:', error);
+      throw error; // You may want to propagate the error to the caller
+    }
+  }
+
+    // Update appointment status
+    async updateAppointmentStatus(appointmentId: number, status: 'Pending' | 'Confirmed'): Promise<any> {
+      try {
+        const response = await fetch(`${this.baseUrl}/update-status/${appointmentId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ Status: status }),
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to update appointment status');
+        }
+  
+        const responseData = await response.json();
+        return responseData; // This will contain the updated appointment details
+      } catch (error) {
+        console.error('Error updating appointment status:', error);
+        throw error;
+      }
+    }
+
+      // Delete appointment
+  async deleteAppointment(appointmentId: number): Promise<any> {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const response = await fetch(`${this.baseUrl}/${appointmentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete appointment');
+      }
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
+    
 }
 
 

@@ -1,18 +1,17 @@
-// src/components/widgets/Calendar.tsx
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface CalendarProps {
   selectedDate: Date | null;
   onSelectDate: (date: Date) => void;
-  highlightedDates?: string[];
+  highlightedDates: string[];  // Dynamically populated based on doctor's availability
   disableUnavailableDates?: boolean;
 }
 
 export function Calendar({
   selectedDate,
   onSelectDate,
-  highlightedDates = [],
+  highlightedDates,
   disableUnavailableDates = false,
 }: CalendarProps) {
   const [currentMonth, setCurrentMonth] = React.useState(new Date());
@@ -40,6 +39,7 @@ export function Calendar({
     { key: 'sat', label: 'S' },
   ];
 
+  // Function to check if the day is highlighted (based on availability)
   const isHighlighted = (day: number) => {
     const dateStr = new Date(
       currentMonth.getFullYear(),
