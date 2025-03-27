@@ -177,7 +177,7 @@ useEffect(() => {
   
     const appointment = {
       AppointmentDate: selectedDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
-      AppointmentTime: selectedTime,
+      AppointmentTime: selectedTime.split(' - ')[0],
       Status: 'Pending',
       PatientID: parseInt(selectedPatient),
       DoctorID: parseInt(selectedDoctor),

@@ -2,8 +2,7 @@
 
 export interface Doctor {
   DoctorID: number;
-  firstName: string;
-  lastName: string;
+  Name: string;
   Specialization: string;
   'Employeement Status': string;
   'Date of join': string;
