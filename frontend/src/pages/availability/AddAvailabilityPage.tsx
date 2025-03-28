@@ -27,22 +27,34 @@ const AddAvailabilityPage: React.FC = () => {
     }
   }, [doctorId]);
 
+  // const handleInputChange = (field: keyof typeof formData, value: string | number) => {
+  //   setFormData((prev) => ({ ...prev, [field]: value }));
+  // };
+
   const handleInputChange = (field: keyof typeof formData, value: string | number) => {
+    // Fields that require time formatting
+    const timeFields: Array<keyof typeof formData> = ["StartTime", "EndTime"];
+
+    if (typeof value === "string" && timeFields.includes(field)) {
+      // Ensure the time format is HH:mm:ss
+      value = `${value}:00`;
+    }
+
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-  
+
     // Log the form data being submitted
     console.log('Form Data Submitted:', formData);
-  
+
     try {
       await AvailabilityService.addAvailability(formData);
-  
+
       success('Availability added successfully!');
-      navigate('/dashboard');
     } catch (err) {
       // Handle error, check the response
       if (err.response && err.response.status === 409) {
@@ -56,7 +68,7 @@ const AddAvailabilityPage: React.FC = () => {
       setIsSubmitting(false);
     }
   };
-  
+
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -89,15 +101,23 @@ const AddAvailabilityPage: React.FC = () => {
             <label htmlFor="AvailableDay" className="block text-sm font-medium text-gray-700">
               Available Day
             </label>
-            <input
-              type="text"
+            <select
               id="AvailableDay"
               value={formData.AvailableDay}
-              onChange={(e) => handleInputChange('AvailableDay', e.target.value)}
+              onChange={(e) => handleInputChange("AvailableDay", e.target.value)}
               required
               className="block w-full px-3 py-2 border border-gray-300 rounded-md"
-              placeholder="Enter Available Day"
-            />
+            >
+              <option value="" disabled>Select a day</option>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+              <option value="Sunday">Sunday</option>
+            </select>
+
           </div>
 
           <div className="space-y-2">

@@ -18,7 +18,7 @@ function GenderDistributionChart({ patientData }: GenderDistributionChartProps) 
 
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Gender Distribution</h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Patient Registrations</h3>
       
       {/* Line Chart */}
       <ResponsiveContainer width="100%" height={300}>

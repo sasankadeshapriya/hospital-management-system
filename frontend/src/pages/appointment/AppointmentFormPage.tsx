@@ -171,13 +171,51 @@ useEffect(() => {
     return date.toTimeString().slice(0, 5); // HH:MM
   };
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (!selectedDate || !selectedTime) return; // Ensure that a date and time are selected
+  //   console.log(selectedDate)
+  //   console.log(selectedDate.toISOString().split('T')[0])
+  
+  //   const appointment = {
+  //     AppointmentDate: selectedDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+  //     AppointmentTime: selectedTime,
+  //     Status: 'Pending',
+  //     PatientID: parseInt(selectedPatient),
+  //     DoctorID: parseInt(selectedDoctor),
+  //     AppointmentType: appointmentType,
+  //     AvailabilityID: doctorAvailability.find(
+  //       (slot) => `${slot['Start Time']} - ${slot['End Time']}` === selectedTime
+  //     )?.AvailabilityID, // Find the correct AvailabilityID based on the selected time
+  //   };
+  
+  //   try {
+  //     await AppointmentService.createAppointment(appointment);
+  //     success('Appointment booked successfully!');
+  //     navigate('/appointments');
+  //   } catch (err) {
+  //     console.error('Error creating appointment:', err);
+  //     error('Failed to create appointment');
+  //   }
+  // };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDate || !selectedTime) return; // Ensure that a date and time are selected
-  
+
+    console.log("Original Selected Date: ", selectedDate);
+
+    // Adjust the date to remove the timezone offset
+    const adjustedDate = new Date(selectedDate);
+    adjustedDate.setMinutes(adjustedDate.getMinutes() - adjustedDate.getTimezoneOffset()); // Adjust for timezone offset
+
+    // Format as YYYY-MM-DD
+    const formattedDate = adjustedDate.toISOString().split('T')[0]; 
+
+    console.log("Formatted Date (after timezone adjustment): ", formattedDate);
+
     const appointment = {
-      AppointmentDate: selectedDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
-      AppointmentTime: selectedTime.split(' - ')[0],
+      AppointmentDate: formattedDate, // Use the manually adjusted and formatted date
+      AppointmentTime: selectedTime,
       Status: 'Pending',
       PatientID: parseInt(selectedPatient),
       DoctorID: parseInt(selectedDoctor),
@@ -186,7 +224,7 @@ useEffect(() => {
         (slot) => `${slot['Start Time']} - ${slot['End Time']}` === selectedTime
       )?.AvailabilityID, // Find the correct AvailabilityID based on the selected time
     };
-  
+
     try {
       await AppointmentService.createAppointment(appointment);
       success('Appointment booked successfully!');
@@ -195,7 +233,8 @@ useEffect(() => {
       console.error('Error creating appointment:', err);
       error('Failed to create appointment');
     }
-  };
+};
+
   
 
   return (
