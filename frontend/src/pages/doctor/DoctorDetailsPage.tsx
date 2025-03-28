@@ -154,12 +154,12 @@ function DoctorDetailsPage() {
         )}
         <div className="flex gap-4 mt-10 justify-end">
           {/* Add Button */}
-          {/* <button
+          <button
             onClick={handleAddAvailability} // Navigate to add availability form
             className="flex items-center justify-center px-4 py-2 bg-indigo-100 text-indigo-800 rounded-lg hover:bg-indigo-200"
           >
             Add
-          </button> */}
+          </button>
   
           {/* Update Button (only enabled if availability exists) */}
           <button

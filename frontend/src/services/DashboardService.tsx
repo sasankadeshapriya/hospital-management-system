@@ -62,16 +62,22 @@ export interface GenderDistributionItem {
     }
   
     private ensureFullMonthData(data: GenderDistributionItem[]): GenderDistributionItem[] {
-      const allMonths = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-      ];
-  
+      const currentDate = new Date();
+      const allMonths: string[] = [];
+    
+      // Generate past 12 months dynamically
+      for (let i = 11; i >= 0; i--) {
+        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+        allMonths.push(date.toLocaleString('en-US', { month: 'short' }));
+      }
+    
       const monthDataMap = new Map(data.map(item => [item.name, item]));
-  
-      return allMonths.map(month => 
+    
+      return allMonths.map(month =>
         monthDataMap.get(month) || { name: month, male: 0, female: 0 }
       );
     }
+    
   }
   
   export default new DashboardService();
