@@ -19,6 +19,7 @@ CREATE TABLE Patients (
     ContactNumber VARCHAR(15) NOT NULL,       -- Patient's contact number
     Address VARCHAR(255) NOT NULL,             -- Residential address	
     CNIC VARCHAR(20) NOT NULL,           -- Unique CNIC number
+    DOJ DATE NOT NULL,
     isActive boolean not null
 );
 

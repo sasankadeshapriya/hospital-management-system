@@ -16,7 +16,7 @@ DELIMITER //
 CREATE PROCEDURE GetMonthlyGenderDistribution()
 BEGIN
     SELECT 
-        DATE_FORMAT(DOB, '%b') AS month,
+        DATE_FORMAT(DOJ, '%b') AS month,
         SUM(CASE WHEN Gender = 'M' THEN 1 ELSE 0 END) AS maleCount,
         SUM(CASE WHEN Gender = 'F' THEN 1 ELSE 0 END) AS femaleCount
     FROM Patients

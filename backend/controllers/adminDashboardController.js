@@ -15,7 +15,7 @@ const getDashboardStatistics = async (req, res) => {
         // Query 2: Fetch monthly patient gender distribution
         const genderDistributionQuery = `
             SELECT 
-                DATE_FORMAT(DOB, '%b') AS month,
+                DATE_FORMAT(DOJ, '%b') AS month,
                 SUM(CASE WHEN Gender = 'M' THEN 1 ELSE 0 END) AS maleCount,
                 SUM(CASE WHEN Gender = 'F' THEN 1 ELSE 0 END) AS femaleCount
             FROM Patients

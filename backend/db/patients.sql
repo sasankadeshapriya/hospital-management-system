@@ -69,8 +69,8 @@ BEGIN
         
         if cnic_no is null then
         
-			INSERT INTO Patients (FirstName, LastName, DOB, Gender, ContactNumber, Address, CNIC, isActive)
-			VALUES (p_FirstName, p_LastName, p_DOB, p_Gender, p_ContactNumber, p_Address, p_CNIC, p_isActive);
+			INSERT INTO Patients (FirstName, LastName, DOB, Gender, ContactNumber, Address, CNIC,DOJ, isActive)
+			VALUES (p_FirstName, p_LastName, p_DOB, p_Gender, p_ContactNumber, p_Address, p_CNIC,CURRENT_DATE, p_isActive);
 		
         else
 			if isAct = 0 then
@@ -83,6 +83,7 @@ BEGIN
 					ContactNumber = p_ContactNumber,
 					Address = p_Address,
 					CNIC = p_CNIC,
+                    DOJ = CURRENT_DATE,
 					isActive = p_isActive
 				WHERE CNIC = p_CNIC;
 			else
